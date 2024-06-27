@@ -1,6 +1,6 @@
 ﻿using SharpTables;
 
-Formatting f = Formatting.ASCII;
+Formatting f = Formatting.Minimalist;
 
 object[,] dataset = new object[,]
 {

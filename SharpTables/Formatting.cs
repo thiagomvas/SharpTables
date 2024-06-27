@@ -114,6 +114,38 @@
 				DividerColor = ConsoleColor.White
 			}
 		};
+
+		public static readonly Formatting Minimalist = new Formatting
+		{
+			TopLeftDivider = ' ',
+			TopRightDivider = ' ',
+			BottomLeftDivider = ' ',
+			BottomRightDivider = ' ',
+			HorizontalDivider = ' ',
+			VerticalDivider = ' ',
+			TopMiddleDivider = ' ',
+			BottomMiddleDivider = ' ',
+			MiddleDivider = ' ',
+			LeftMiddleDivider = ' ',
+			RightMiddleDivider = ' ',
+			DividerColor = ConsoleColor.DarkGray,
+			Header = new HeaderFormatting
+			{
+				TopLeftDivider = '-',
+				TopRightDivider = '-',
+				BottomLeftDivider = '-',
+				BottomRightDivider = '-',
+				HorizontalDivider = '─', 
+				VerticalDivider = ' ',
+				TopMiddleDivider = '-',
+				BottomMiddleDivider = '-',
+				MiddleDivider = '-',
+				LeftMiddleDivider = '-',
+				RightMiddleDivider = '-',
+				DividerColor = ConsoleColor.White,
+				HasTopDivider = false
+			}
+		};
 		#endregion
 
 		public class HeaderFormatting
@@ -130,6 +162,7 @@
 			public char LeftMiddleDivider { get; set; } = '╠';
 			public char RightMiddleDivider { get; set; } = '╣';
 			public ConsoleColor DividerColor { get; set; } = ConsoleColor.White;
+			public bool HasTopDivider { get; set; } = true;
 		}
 	}
 

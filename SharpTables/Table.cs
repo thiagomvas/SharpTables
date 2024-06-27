@@ -72,7 +72,8 @@
 			}
 
 			// Print the header dividers
-			PrintHorizontalDivider(widestCellPerColumn, _formatting.Header.TopLeftDivider, _formatting.Header.TopMiddleDivider, _formatting.Header.TopRightDivider, _formatting.Header.HorizontalDivider, _formatting.Header.DividerColor);
+			if(_formatting.Header.HasTopDivider)
+				PrintHorizontalDivider(widestCellPerColumn, _formatting.Header.TopLeftDivider, _formatting.Header.TopMiddleDivider, _formatting.Header.TopRightDivider, _formatting.Header.HorizontalDivider, _formatting.Header.DividerColor);
 
 			// Print the header row
 			Row headerRow = Rows.First();
