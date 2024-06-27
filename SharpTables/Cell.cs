@@ -15,5 +15,7 @@
 			Text = text;
 			Color = color;
 		}
+
+		public bool IsNumeric => double.TryParse(Text, out _);
 	}
 }

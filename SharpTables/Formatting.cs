@@ -22,6 +22,8 @@
 
 		#region Presets
 
+		public static readonly Formatting Default = new();
+
 		public static readonly Formatting ASCII = new Formatting
 		{
 			TopLeftDivider = '+',
@@ -131,17 +133,17 @@
 			DividerColor = ConsoleColor.DarkGray,
 			Header = new HeaderFormatting
 			{
-				TopLeftDivider = '-',
-				TopRightDivider = '-',
-				BottomLeftDivider = '-',
-				BottomRightDivider = '-',
+				TopLeftDivider = '─',
+				TopRightDivider = '─',
+				BottomLeftDivider = '─',
+				BottomRightDivider = '─',
 				HorizontalDivider = '─', 
 				VerticalDivider = ' ',
-				TopMiddleDivider = '-',
-				BottomMiddleDivider = '-',
-				MiddleDivider = '-',
-				LeftMiddleDivider = '-',
-				RightMiddleDivider = '-',
+				TopMiddleDivider = '─',
+				BottomMiddleDivider = '─',
+				MiddleDivider = '─',
+				LeftMiddleDivider = '─',
+				RightMiddleDivider = '─',
 				DividerColor = ConsoleColor.White,
 				HasTopDivider = false
 			}

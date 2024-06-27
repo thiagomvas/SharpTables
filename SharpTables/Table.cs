@@ -4,16 +4,17 @@
 	{
 		public List<Row> Rows { get; set; }
 		public Alignment NumberAlignment { get; set; } = Alignment.Left;
-		private readonly Formatting _formatting;
+		public Alignment TextAlignment { get; set; } = Alignment.Left;
+		public Formatting Formatting { get; set; }
 		public Table()
 		{
 			Rows = new List<Row>();
-			_formatting = new Formatting();
+			Formatting = new Formatting();
 		}
 		public Table(Formatting formatting)
 		{
 			Rows = new List<Row>();
-			_formatting = formatting;
+			Formatting = formatting;
 		}
 
 
@@ -72,31 +73,31 @@
 			}
 
 			// Print the header dividers
-			if(_formatting.Header.HasTopDivider)
-				PrintHorizontalDivider(widestCellPerColumn, _formatting.Header.TopLeftDivider, _formatting.Header.TopMiddleDivider, _formatting.Header.TopRightDivider, _formatting.Header.HorizontalDivider, _formatting.Header.DividerColor);
+			if(Formatting.Header.HasTopDivider)
+				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.TopLeftDivider, Formatting.Header.TopMiddleDivider, Formatting.Header.TopRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 
 			// Print the header row
 			Row headerRow = Rows.First();
 			foreach (var cell in headerRow.Cells)
 			{
-				Console.ForegroundColor = _formatting.Header.DividerColor;
-				Console.Write(_formatting.Header.VerticalDivider);
+				Console.ForegroundColor = Formatting.Header.DividerColor;
+				Console.Write(Formatting.Header.VerticalDivider);
 				Console.ForegroundColor = cell.Color;
 				Console.Write(Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[headerRow.Cells.IndexOf(cell)]));
 				Console.ResetColor();
 			}
-			Console.ForegroundColor = _formatting.Header.DividerColor;
-			Console.WriteLine(_formatting.Header.VerticalDivider);
+			Console.ForegroundColor = Formatting.Header.DividerColor;
+			Console.WriteLine(Formatting.Header.VerticalDivider);
 			Console.ResetColor();
 
 			if(separateHeader)
 			{
-				PrintHorizontalDivider(widestCellPerColumn, _formatting.Header.BottomLeftDivider, _formatting.Header.BottomMiddleDivider, _formatting.Header.BottomRightDivider, _formatting.Header.HorizontalDivider, _formatting.Header.DividerColor);	
-				PrintHorizontalDivider(widestCellPerColumn, _formatting.TopLeftDivider, _formatting.TopMiddleDivider, _formatting.TopRightDivider, _formatting.HorizontalDivider, _formatting.DividerColor);
+				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.BottomLeftDivider, Formatting.Header.BottomMiddleDivider, Formatting.Header.BottomRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);	
+				PrintHorizontalDivider(widestCellPerColumn, Formatting.TopLeftDivider, Formatting.TopMiddleDivider, Formatting.TopRightDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
 			}
 			else
 			{
-				PrintHorizontalDivider(widestCellPerColumn, _formatting.Header.LeftMiddleDivider, _formatting.Header.MiddleDivider, _formatting.Header.RightMiddleDivider, _formatting.Header.HorizontalDivider, _formatting.Header.DividerColor);
+				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 			}
 
 			foreach (Row row in Rows.Skip(1))
@@ -111,34 +112,26 @@
 					}
 					
 					Cell cell = row.Cells[i];
-					string cellText = "";
-					if(double.TryParse(cell.Text, out _))
-					{
-						cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], NumberAlignment);
-					}
-					else
-					{
-						cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i]);
-					}
-					Console.ForegroundColor = _formatting.DividerColor;
-					Console.Write(_formatting.VerticalDivider);
+					string cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], cell.IsNumeric ? NumberAlignment : TextAlignment);
+					Console.ForegroundColor = Formatting.DividerColor;
+					Console.Write(Formatting.VerticalDivider);
 					Console.ForegroundColor = cell.Color;
 					Console.Write(cellText);
 					Console.ResetColor();
 				}
-				Console.ForegroundColor = _formatting.DividerColor;
-				Console.WriteLine(_formatting.VerticalDivider);
+				Console.ForegroundColor = Formatting.DividerColor;
+				Console.WriteLine(Formatting.VerticalDivider);
 				Console.ResetColor();
 
 				// Print the middle divider
 				if (row != Rows.Last())
 				{
-					PrintHorizontalDivider(widestCellPerColumn, _formatting.LeftMiddleDivider, _formatting.MiddleDivider, _formatting.RightMiddleDivider, _formatting.HorizontalDivider, _formatting.DividerColor);
+					PrintHorizontalDivider(widestCellPerColumn, Formatting.LeftMiddleDivider, Formatting.MiddleDivider, Formatting.RightMiddleDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
 				}
 			}
 
 			// Print the bottom divider
-			PrintHorizontalDivider(widestCellPerColumn, _formatting.BottomLeftDivider, _formatting.BottomMiddleDivider, _formatting.BottomRightDivider, _formatting.HorizontalDivider, _formatting.DividerColor);
+			PrintHorizontalDivider(widestCellPerColumn, Formatting.BottomLeftDivider, Formatting.BottomMiddleDivider, Formatting.BottomRightDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
 		}
 
 		public static Table FromDataSet(object[,] data) => FromDataSet(data, new Formatting());

@@ -1,6 +1,6 @@
 ﻿using SharpTables;
 
-Formatting f = Formatting.Minimalist;
+Formatting f = Formatting.Default;
 
 object[,] dataset = new object[,]
 {
@@ -12,7 +12,25 @@ object[,] dataset = new object[,]
 };
 
 Table table = Table.FromDataSet(dataset, f);
-table.NumberAlignment = Alignment.Center;
 table.SetColumnColor(1, ConsoleColor.Yellow);
-table.SetColumnPadding(1, 1, true);
+table.SetColumnPadding(1, 5, true);
 table.Print();
+Console.WriteLine();
+
+table.Formatting = Formatting.Minimalist;
+table.Print();
+Console.WriteLine();
+
+table.Formatting = Formatting.ASCII;
+table.Print();
+Console.WriteLine();
+
+table.Formatting = Formatting.DoubleLined;
+table.Print();
+Console.WriteLine();
+
+table.Formatting = Formatting.SingleLined;
+table.Print();
+Console.WriteLine();
+
+
