@@ -20,6 +20,11 @@ namespace SharpTables
 		public Alignment TextAlignment { get; set; } = Alignment.Left;
 
 		/// <summary>
+		/// Gets or sets the string used to replace null or empty string values
+		/// </summary>
+		public string EmptyReplacement = "";
+
+		/// <summary>
 		/// Gets or sets the table formatting used. This does not include text formatting.
 		/// </summary>
 		public Formatting Formatting { get; set; }
@@ -156,6 +161,10 @@ namespace SharpTables
 					}
 
 					Cell cell = row.Cells[i];
+					if(string.IsNullOrWhiteSpace(cell.Text))
+					{
+						cell.Text = EmptyReplacement;
+					}
 					string cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], cell.IsNumeric ? NumberAlignment : TextAlignment);
 					Console.ForegroundColor = Formatting.DividerColor;
 					Console.Write(Formatting.VerticalDivider);
@@ -239,6 +248,10 @@ namespace SharpTables
 					}
 
 					Cell cell = row.Cells[i];
+					if (string.IsNullOrWhiteSpace(cell.Text))
+					{
+						cell.Text = EmptyReplacement;
+					}
 					string cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], cell.IsNumeric ? NumberAlignment : TextAlignment);
 					sb.Append($"{Formatting.VerticalDivider}");
 					sb.Append($"{cellText}");
