@@ -16,5 +16,14 @@
 		{
 			Cells = cells.ToList();
 		}
+
+		public Row(IEnumerable<object> cells, Cell preset)
+		{
+			Cells = cells.Select(c => new Cell(c?.ToString() ?? string.Empty) { Color = preset.Color, PaddingRight = preset.PaddingRight}).ToList();
+		}
+		public Row(IEnumerable<Cell> cells, Cell preset)
+		{
+			Cells = cells.Select(c => new Cell(c.Text) { Color = preset.Color, PaddingRight = preset.PaddingRight}).ToList();
+		}
 	}
 }
