@@ -3,6 +3,7 @@
 	public class Table
 	{
 		public List<Row> Rows { get; set; }
+		public Alignment NumberAlignment { get; set; } = Alignment.Left;
 		private readonly Formatting _formatting;
 		public Table()
 		{
@@ -31,6 +32,20 @@
 				if (column < row.Cells.Count)
 				{
 					row.Cells[column].Color = color;
+				}
+			}
+		}
+		public void SetColumnPadding(int column, int padding, bool changeHeaderPadding = false)
+		{
+			foreach (Row row in Rows)
+			{
+				if(!changeHeaderPadding && row == Rows[0])
+				{
+					continue;
+				}
+				if (column < row.Cells.Count)
+				{
+					row.Cells[column].PaddingRight = padding;
 				}
 			}
 		}
@@ -93,11 +108,21 @@
 					{
 						row.Cells.Add(new Cell(""));
 					}
+					
 					Cell cell = row.Cells[i];
+					string cellText = "";
+					if(double.TryParse(cell.Text, out _))
+					{
+						cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], NumberAlignment);
+					}
+					else
+					{
+						cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i]);
+					}
 					Console.ForegroundColor = _formatting.DividerColor;
 					Console.Write(_formatting.VerticalDivider);
 					Console.ForegroundColor = cell.Color;
-					Console.Write(Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i]));
+					Console.Write(cellText);
 					Console.ResetColor();
 				}
 				Console.ForegroundColor = _formatting.DividerColor;

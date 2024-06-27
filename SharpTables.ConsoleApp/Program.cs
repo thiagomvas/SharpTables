@@ -1,24 +1,18 @@
 ﻿using SharpTables;
 
-Formatting f = new();
+Formatting f = Formatting.ASCII;
 
-var table = new Table(f);
-table.AddRow(new Row([ "Name", "Age", "Occupation" ]));
-AddRow(table, [ "John Doe", 30, "Software Developer" ]);
-AddRow(table, [ "Jane Doe", 25, null ]);
-AddRow(table, [ "James Smith",null , "Manager" ]);
-AddRow(table, [ "Judy Smith", 40, "CEO" ]);
-
-table.Print();
-
-void AddRow(Table table, object[] row)
+object[,] dataset = new object[,]
 {
-	var cells = row.Select(c => new Cell(c?.ToString() ?? "null")).ToList();
-	foreach(var cell in cells)
-	{
-		if(cell.Text == "null")
-			cell.Color = ConsoleColor.Red;
-	}
+	{ "Name", "Age", "City" },
+	{ "John Doe", 42, "New York" },
+	{ "Jane Doe", 36, "Chicago" },
+	{ "Joe Bloggs", 25, "Los Angeles" },
+	{ "Jenny Smith", 28, "Miami" }
+};
 
-	table.AddRow(new Row(cells));
-}
+Table table = Table.FromDataSet(dataset, f);
+table.NumberAlignment = Alignment.Center;
+table.SetColumnColor(1, ConsoleColor.Yellow);
+table.SetColumnPadding(1, 1, true);
+table.Print();
