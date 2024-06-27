@@ -20,7 +20,20 @@
 		{
 			Rows.Add(row);
 		}
-
+		public void SetColumnColor(int column, ConsoleColor color, bool changeHeaderColor = false)
+		{
+			foreach (Row row in Rows)
+			{
+				if(!changeHeaderColor && row == Rows[0])
+				{
+					continue;
+				}
+				if (column < row.Cells.Count)
+				{
+					row.Cells[column].Color = color;
+				}
+			}
+		}
 		/// <summary>
 		/// Prints the table to the console
 		/// </summary>
@@ -100,6 +113,33 @@
 
 			// Print the bottom divider
 			PrintHorizontalDivider(widestCellPerColumn, _formatting.BottomLeftDivider, _formatting.BottomMiddleDivider, _formatting.BottomRightDivider, _formatting.HorizontalDivider, _formatting.DividerColor);
+		}
+
+		public static Table FromDataSet(object[,] data) => FromDataSet(data, new Formatting());
+		public static Table FromDataSet(object[,] data, Formatting formatting)
+		{
+			Table table = new Table(formatting);
+			for (int i = 0; i < data.GetLength(0); i++)
+			{
+				object[] row = new object[data.GetLength(1)];
+				for (int j = 0; j < data.GetLength(1); j++)
+				{
+					row[j] = data[i, j];
+				}
+				table.AddRow(new Row(row));
+			}
+			return table;
+		}
+
+		public static Table FromDataSet(IEnumerable<IEnumerable<object>> data) => FromDataSet(data, new Formatting());
+		public static Table FromDataSet(IEnumerable<IEnumerable<object>> data, Formatting formatting)
+		{
+			Table table = new Table(formatting);
+			foreach (IEnumerable<object> row in data)
+			{
+				table.AddRow(new Row(row));
+			}
+			return table;
 		}
 
 		private void PrintHorizontalDivider(int[] columnWidths, char left, char middle, char right, char horizontal, ConsoleColor dividerColor)
