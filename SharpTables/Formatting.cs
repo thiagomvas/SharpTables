@@ -2,6 +2,7 @@
 {
 	public class Formatting
 	{
+		#region Properties
 		public char TopLeftDivider { get; set; } = '┌';
 		public char TopRightDivider { get; set; } = '┐';
 		public char BottomLeftDivider { get; set; } = '└';
@@ -16,6 +17,104 @@
 		public ConsoleColor DividerColor { get; set; } = ConsoleColor.DarkGray;
 
 		public HeaderFormatting Header { get; set; } = new HeaderFormatting();
+		#endregion
+
+
+		#region Presets
+
+		public static readonly Formatting ASCII = new Formatting
+		{
+			TopLeftDivider = '+',
+			TopRightDivider = '+',
+			BottomLeftDivider = '+',
+			BottomRightDivider = '+',
+			HorizontalDivider = '-',
+			VerticalDivider = '|',
+			TopMiddleDivider = '+',
+			BottomMiddleDivider = '+',
+			MiddleDivider = '+',
+			LeftMiddleDivider = '+',
+			RightMiddleDivider = '+',
+			DividerColor = ConsoleColor.Gray,
+			Header = new HeaderFormatting
+			{
+				TopLeftDivider = '+',
+				TopRightDivider = '+',
+				BottomLeftDivider = '+',
+				BottomRightDivider = '+',
+				HorizontalDivider = '-',
+				VerticalDivider = '|',
+				TopMiddleDivider = '+',
+				BottomMiddleDivider = '+',
+				MiddleDivider = '+',
+				LeftMiddleDivider = '+',
+				RightMiddleDivider = '+',
+				DividerColor = ConsoleColor.White
+			}
+		};
+
+		public static readonly Formatting DoubleLined = new Formatting
+		{
+			TopLeftDivider = '╔',
+			TopRightDivider = '╗',
+			BottomLeftDivider = '╚',
+			BottomRightDivider = '╝',
+			HorizontalDivider = '═',
+			VerticalDivider = '║',
+			TopMiddleDivider = '╦',
+			BottomMiddleDivider = '╩',
+			MiddleDivider = '╬',
+			LeftMiddleDivider = '╠',
+			RightMiddleDivider = '╣',
+			DividerColor = ConsoleColor.DarkGray,
+			Header = new HeaderFormatting
+			{
+				TopLeftDivider = '╔',
+				TopRightDivider = '╗',
+				BottomLeftDivider = '╚',
+				BottomRightDivider = '╝',
+				HorizontalDivider = '═',
+				VerticalDivider = '║',
+				TopMiddleDivider = '╦',
+				BottomMiddleDivider = '╩',
+				MiddleDivider = '╬',
+				LeftMiddleDivider = '╠',
+				RightMiddleDivider = '╣',
+				DividerColor = ConsoleColor.White
+			}
+		};
+
+		public static readonly Formatting SingleLined = new Formatting
+		{
+			TopLeftDivider = '┌',
+			TopRightDivider = '┐',
+			BottomLeftDivider = '└',
+			BottomRightDivider = '┘',
+			HorizontalDivider = '─',
+			VerticalDivider = '│',
+			TopMiddleDivider = '┬',
+			BottomMiddleDivider = '┴',
+			MiddleDivider = '┼',
+			LeftMiddleDivider = '├',
+			RightMiddleDivider = '┤',
+			DividerColor = ConsoleColor.DarkGray,
+			Header = new HeaderFormatting
+			{
+				TopLeftDivider = '┌',
+				TopRightDivider = '┐',
+				BottomLeftDivider = '└',
+				BottomRightDivider = '┘',
+				HorizontalDivider = '─',
+				VerticalDivider = '│',
+				TopMiddleDivider = '┬',
+				BottomMiddleDivider = '┴',
+				MiddleDivider = '┼',
+				LeftMiddleDivider = '├',
+				RightMiddleDivider = '┤',
+				DividerColor = ConsoleColor.White
+			}
+		};
+		#endregion
 
 		public class HeaderFormatting
 		{
