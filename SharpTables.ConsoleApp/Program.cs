@@ -1,6 +1,16 @@
 ﻿using SharpTables;
 
-Formatting f = Formatting.Minimalist;
+
+Formatting f = Formatting.ASCII with 
+{ 
+	DividerColor = ConsoleColor.DarkGray,
+	BottomLeftDivider = '@',
+	BottomRightDivider = '@',
+	TopLeftDivider = '@',
+	TopRightDivider = '@',
+	MiddleDivider = '%',
+	Header = Formatting.ASCII.Header with { Separated = true, }
+};
 
 object[,] dataset = new object[,]
 {
@@ -12,7 +22,12 @@ object[,] dataset = new object[,]
 };
 
 Table table = Table.FromDataSet(dataset, f);
+
+// You may also add rows manually!
+table.AddRow(new Row(["Jimmy Jones", null, "Las Vegas"]));
+
 table.SetColumnColor(1, ConsoleColor.Yellow);
+table.EmptyReplacement = "N/A";
 table.SetColumnPadding(1, 5, true);
 table.Print();
 Console.WriteLine();
