@@ -289,6 +289,11 @@
 			/// Gets or sets a value indicating whether the header has a top divider.
 			/// </summary>
 			public bool HasTopDivider { get; set; } = true;
+
+			/// <summary>
+			/// Gets or set a value indicating whether the header should be separated from the body.
+			/// </summary>
+			public bool Separated { get; set; } = false;
 		}
 	}
 

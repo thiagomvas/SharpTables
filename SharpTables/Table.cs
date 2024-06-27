@@ -98,7 +98,7 @@ namespace SharpTables
 		/// Prints the table to the console.
 		/// </summary>
 		/// <param name="separateHeader">Whether the header should be printed separated from the rest of the table.</param>
-		public void Print(bool separateHeader = false)
+		public void Print()
 		{
 			// Setup
 			int[] widestCellPerColumn = new int[Rows.Max(r => r.Cells.Count)];
@@ -134,7 +134,7 @@ namespace SharpTables
 			Console.WriteLine(Formatting.Header.VerticalDivider);
 			Console.ResetColor();
 
-			if (separateHeader)
+			if (Formatting.Header.Separated)
 			{
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.BottomLeftDivider, Formatting.Header.BottomMiddleDivider, Formatting.Header.BottomRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.TopLeftDivider, Formatting.TopMiddleDivider, Formatting.TopRightDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
@@ -178,21 +178,13 @@ namespace SharpTables
 			PrintHorizontalDivider(widestCellPerColumn, Formatting.BottomLeftDivider, Formatting.BottomMiddleDivider, Formatting.BottomRightDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
 		}
 
-		/// <summary>
-		/// Converts the table to its string representation.
-		/// </summary>
-		/// <returns>The string representation of the table.</returns>
-		public override string ToString()
-		{
-			return ToString(false);
-		}
 
 		/// <summary>
 		/// Converts the table to its string representation.
 		/// </summary>
 		/// <param name="separateHeader">Whether the header should be printed separated from the rest of the table.</param>
 		/// <returns>The string representation of the table.</returns>
-		public string ToString(bool separateHeader)
+		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -225,7 +217,7 @@ namespace SharpTables
 			}
 			sb.AppendLine($"{Formatting.Header.VerticalDivider}");
 
-			if (separateHeader)
+			if (Formatting.Header.Separated)
 			{
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.Header.BottomLeftDivider, Formatting.Header.BottomMiddleDivider, Formatting.Header.BottomRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor));
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.TopLeftDivider, Formatting.TopMiddleDivider, Formatting.TopRightDivider, Formatting.HorizontalDivider, Formatting.DividerColor));
