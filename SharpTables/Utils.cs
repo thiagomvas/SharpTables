@@ -1,6 +1,6 @@
 ﻿namespace SharpTables
 {
-	public static class Utils
+	internal static class Utils
 	{
 		public static int MeasureStringWidth(string str)
 		{
