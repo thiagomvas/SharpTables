@@ -1,7 +1,7 @@
 # SharpTables
 A versatile and customizable console table formatter. Generate tables ready to be written to console with the ability to customize even the characters used by the generator to generate the table.
 
-## Example usages
+## Example usage
 ### Basic table
 ```cs
 Formatting f = Formatting.Minimalist;
@@ -42,7 +42,7 @@ Console.WriteLine();
 ```
 
 ### Custom Formatting
-The ``Formatting`` class already contains some presets already, you can also modify them using ``with`` due to them being ``record`` types, or make your own instance. By default, using ``new Formatting()`` will use ``Formatting.Default``
+The ``Formatting`` class already has some presets, you can also modify them using ``with`` due to them being ``record`` types, or make your own instance. By default, using ``new Formatting()`` will use ``Formatting.Default``
 
 ```cs
 
