@@ -22,7 +22,15 @@ namespace SharpTables
 		/// </summary>
 		public int Padding { get; set; } = 5;
 
+
+		/// <summary>
+		/// Gets the position of the cell in the table.
+		/// </summary>
 		public Vector2 Position { get; internal set; }
+
+		/// <summary>
+		/// Gets or sets the cell's text alignment
+		/// </summary>
 		public Alignment Alignment { get; set; } = Alignment.Left;
 
 		/// <summary>

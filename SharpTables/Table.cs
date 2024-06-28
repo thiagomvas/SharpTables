@@ -30,23 +30,13 @@ namespace SharpTables
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Table"/> class with the specified formatting.
-		/// </summary>
-		/// <param name="formatting">The formatting to apply to the table.</param>
-		public Table(Formatting formatting)
-		{
-			rows = new List<Row>();
-			Formatting = formatting;
-		}
-
-		/// <summary>
 		/// Adds a row to the table.
 		/// </summary>
 		/// <param name="row">The row to add.</param>
 		public void AddRow(Row row)
 		{
 			row.LineIndex = rows.Count;
-			for(int i = 0; i < row.Cells.Count; i++)
+			for (int i = 0; i < row.Cells.Count; i++)
 			{
 				row.Cells[i].Position = new Vector2(i, row.LineIndex);
 			}
@@ -62,6 +52,10 @@ namespace SharpTables
 			rows.Insert(0, row);
 		}
 
+		/// <summary>
+		/// Applies a preset action to every cell in the table. This is only applied to cells that are already in the table.
+		/// </summary>
+		/// <param name="presetter"></param>
 		public void UsePreset(Action<Cell> presetter)
 		{
 			foreach (Row row in rows)
@@ -75,7 +69,6 @@ namespace SharpTables
 		/// <summary>
 		/// Prints the table to the console.
 		/// </summary>
-		/// <param name="separateHeader">Whether the header should be printed separated from the rest of the table.</param>
 		public void Print()
 		{
 			// Setup
@@ -134,7 +127,7 @@ namespace SharpTables
 					}
 
 					Cell cell = row.Cells[i];
-					if(string.IsNullOrWhiteSpace(cell.Text))
+					if (string.IsNullOrWhiteSpace(cell.Text))
 					{
 						cell.Text = EmptyReplacement;
 					}
@@ -164,7 +157,6 @@ namespace SharpTables
 		/// <summary>
 		/// Converts the table to its string representation.
 		/// </summary>
-		/// <param name="separateHeader">Whether the header should be printed separated from the rest of the table.</param>
 		/// <returns>The string representation of the table.</returns>
 		public override string ToString()
 		{
@@ -249,17 +241,9 @@ namespace SharpTables
 		/// </summary>
 		/// <param name="data">The two-dimensional array of data.</param>
 		/// <returns>The created table.</returns>
-		public static Table FromDataSet(object[,] data) => FromDataSet(data, new Formatting());
-
-		/// <summary>
-		/// Creates a table from a two-dimensional array of data with the specified formatting.
-		/// </summary>
-		/// <param name="data">The two-dimensional array of data.</param>
-		/// <param name="formatting">The formatting to apply to the table.</param>
-		/// <returns>The created table.</returns>
-		public static Table FromDataSet(object[,] data, Formatting formatting)
+		public static Table FromDataSet(object[,] data)
 		{
-			Table table = new Table(formatting);
+			Table table = new Table();
 			for (int i = 0; i < data.GetLength(0); i++)
 			{
 				object[] row = new object[data.GetLength(1)];
@@ -277,17 +261,9 @@ namespace SharpTables
 		/// </summary>
 		/// <param name="data">The collection of data.</param>
 		/// <returns>The created table.</returns>
-		public static Table FromDataSet(IEnumerable<IEnumerable<object>> data) => FromDataSet(data, new Formatting());
-
-		/// <summary>
-		/// Creates a table from a collection of data with the specified formatting.
-		/// </summary>
-		/// <param name="data">The collection of data.</param>
-		/// <param name="formatting">The formatting to apply to the table.</param>
-		/// <returns>The created table.</returns>
-		public static Table FromDataSet(IEnumerable<IEnumerable<object>> data, Formatting formatting)
+		public static Table FromDataSet(IEnumerable<IEnumerable<object>> data)
 		{
-			Table table = new Table(formatting);
+			Table table = new Table();
 			foreach (IEnumerable<object> row in data)
 			{
 				table.AddRow(new Row(row));
@@ -308,29 +284,6 @@ namespace SharpTables
 			foreach (T item in data)
 			{
 				Row row = generatorFunc(item);
-				result.AddRow(row);
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// Creates a table from a collection of data with a function to produce rows based on each item.
-		/// </summary>
-		/// <typeparam name="T">The type of item being added.</typeparam>
-		/// <param name="data">The dataset</param>
-		/// <param name="generatorFunc">The function used to generate rows</param>
-		/// <param name="cellColorer">The function used to color cells</param>
-		/// <returns>A table generated from every element in the dataset</returns>
-		public static Table FromDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc, Func<T, ConsoleColor> cellColorer)
-		{
-			Table result = new();
-			foreach (T item in data)
-			{
-				Row row = generatorFunc(item);
-				foreach (Cell cell in row.Cells)
-				{
-					cell.Color = cellColorer(item);
-				}
 				result.AddRow(row);
 			}
 			return result;
