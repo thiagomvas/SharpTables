@@ -11,16 +11,6 @@ namespace SharpTables
 		private List<Row> rows { get; set; }
 
 		/// <summary>
-		/// Gets or sets the alignment used when parsing numbers
-		/// </summary>
-		public Alignment NumberAlignment { get; set; } = Alignment.Left;
-
-		/// <summary>
-		/// Gets or sets the alignment used when parsing text
-		/// </summary>
-		public Alignment TextAlignment { get; set; } = Alignment.Left;
-
-		/// <summary>
 		/// Gets or sets the string used to replace null or empty string values
 		/// </summary>
 		public string EmptyReplacement = "";
@@ -82,49 +72,6 @@ namespace SharpTables
 				}
 			}
 		}
-
-		/// <summary>
-		/// Sets the color of a column in the table.
-		/// </summary>
-		/// <param name="column">The index of the column.</param>
-		/// <param name="color">The color to set.</param>
-		/// <param name="changeHeaderColor">Whether to change the color of the header cell in the column.</param>
-		public void SetColumnColor(int column, ConsoleColor color, bool changeHeaderColor = false)
-		{
-			foreach (Row row in rows)
-			{
-				if (!changeHeaderColor && row == rows[0])
-				{
-					continue;
-				}
-				if (column < row.Cells.Count)
-				{
-					row.Cells[column].Color = color;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Sets the padding of a column in the table.
-		/// </summary>
-		/// <param name="column">The index of the column.</param>
-		/// <param name="padding">The padding to set.</param>
-		/// <param name="changeHeaderPadding">Whether to change the padding of the header cell in the column.</param>
-		public void SetColumnPadding(int column, int padding, bool changeHeaderPadding = false)
-		{
-			foreach (Row row in rows)
-			{
-				if (!changeHeaderPadding && row == rows[0])
-				{
-					continue;
-				}
-				if (column < row.Cells.Count)
-				{
-					row.Cells[column].Padding = padding;
-				}
-			}
-		}
-
 		/// <summary>
 		/// Prints the table to the console.
 		/// </summary>
@@ -158,7 +105,7 @@ namespace SharpTables
 				Console.ForegroundColor = Formatting.Header.DividerColor;
 				Console.Write(Formatting.Header.VerticalDivider);
 				Console.ForegroundColor = cell.Color;
-				Console.Write(Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[headerRow.Cells.IndexOf(cell)]));
+				Console.Write(GetCellString(cell, widestCellPerColumn[headerRow.Cells.IndexOf(cell)]));
 				Console.ResetColor();
 			}
 			Console.ForegroundColor = Formatting.Header.DividerColor;
@@ -191,7 +138,7 @@ namespace SharpTables
 					{
 						cell.Text = EmptyReplacement;
 					}
-					string cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], cell.IsNumeric ? NumberAlignment : TextAlignment);
+					string cellText = GetCellString(cell, widestCellPerColumn[i]);
 					Console.ForegroundColor = Formatting.DividerColor;
 					Console.Write(Formatting.VerticalDivider);
 					Console.ForegroundColor = cell.Color;
@@ -278,7 +225,7 @@ namespace SharpTables
 					{
 						cell.Text = EmptyReplacement;
 					}
-					string cellText = Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i], cell.IsNumeric ? NumberAlignment : TextAlignment);
+					string cellText = GetCellString(cell, widestCellPerColumn[i]);
 					sb.Append($"{Formatting.VerticalDivider}");
 					sb.Append($"{cellText}");
 				}
@@ -421,6 +368,11 @@ namespace SharpTables
 			sb.Append(right);
 			sb.AppendLine();
 			return sb.ToString();
+		}
+		private string GetCellString(Cell cell, int width)
+		{
+			string cellText = Utils.ResizeStringToWidth(cell.Text, width, cell.Alignment);
+			return cellText;
 		}
 	}
 }

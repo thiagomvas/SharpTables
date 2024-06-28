@@ -23,6 +23,7 @@ namespace SharpTables
 		public int Padding { get; set; } = 5;
 
 		public Vector2 Position { get; internal set; }
+		public Alignment Alignment { get; set; } = Alignment.Left;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Cell"/> class with the specified text.
