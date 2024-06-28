@@ -75,6 +75,48 @@ Formatting format = Formatting.ASCII with
 */
 ```
 
+### Cell Formatting
+You can also use cell-specific formatting, which can be used to change how the cell will look like in the table.
+
+```cs
+
+List<Foo> foos = new List<Foo>
+{
+	new Foo { A = 1, B = "Hello", C = true },
+	new Foo { A = 2, B = "World", C = false },
+	new Foo { A = 3, B = "Something", C = true },
+};
+
+// 'c' represents any cell in the table
+table.UsePreset(c =>
+{
+	if (bool.TryParse(c.Text, out bool b))
+	{
+		c.Text = b ? "V" : "X";
+		c.Alignment = Alignment.Center;
+		c.Color = b ? ConsoleColor.Green : ConsoleColor.Red;
+	}
+	if (int.TryParse(c.Text, out int i))
+	{
+		c.Color = ConsoleColor.Yellow;
+		c.Padding = 0;
+		c.Alignment = Alignment.Right;
+	}
+});
+/*
+The result is colored on console.
+╔═══════════╦══════════════╦════╗
+║ Is Active ║     Name     ║ ID ║
+╠═══════════╬══════════════╬════╣
+│     V     │Hello         │   1│
+├───────────┼──────────────┼────┤
+│     X     │World         │   2│
+├───────────┼──────────────┼────┤
+│     V     │Something     │   3│
+└───────────┴──────────────┴────┘
+*/
+```
+
 ## Contributing
 If you found a bug, have any questions, want to implement your own additions or contribute in any other way, feel free to open a pull request!
 

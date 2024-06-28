@@ -21,7 +21,7 @@ List<Foo> foos = new List<Foo>
 };
 
 Table table = Table.FromDataSet(foos, f => new(f.C, f.B, f.A)); // Novo overload: Passar uma lista de elementos e uma factory ou gerador de linhas usando esses elementos.
-table.Formatting = tableFormatting;
+//table.Formatting = tableFormatting;
 table.EmptyReplacement = "N/A";
 
 // Agr posso aplicar preset por celula.
