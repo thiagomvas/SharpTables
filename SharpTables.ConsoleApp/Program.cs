@@ -12,24 +12,28 @@ Formatting f = Formatting.ASCII with
 	Header = Formatting.ASCII.Header with { Separated = true, }
 };
 
-object[,] dataset = new object[,]
+List<Foo> foos = new List<Foo>
 {
-	{ "Name", "Age", "City" },
-	{ "John Doe", 42, "New York" },
-	{ "Jane Doe", 36, "Chicago" },
-	{ "Joe Bloggs", 25, "Los Angeles" },
-	{ "Jenny Smith", 28, "Miami" }
+	new Foo { A = 1, B = "Hello", C = true },
+	new Foo { A = 2, B = "World", C = false },
+	new Foo { A = 3, B = "SharpTables", C = true },
 };
 
-Table table = Table.FromDataSet(dataset, f);
+Table table = Table.FromDataSet(foos, f => new(f.C, f.B, f.A));
 
 // You may also add rows manually!
 table.AddRow(new Row(["Jimmy Jones", null, "Las Vegas"]));
 
-table.SetColumnColor(1, ConsoleColor.Yellow);
 table.EmptyReplacement = "N/A";
 table.SetColumnPadding(1, 5, true);
 table.Print();
 Console.WriteLine();
 
+
+class Foo
+{
+	public int A;
+	public string B;
+	public bool C;
+}
 

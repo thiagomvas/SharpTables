@@ -1,4 +1,6 @@
-﻿namespace SharpTables
+﻿using System.Numerics;
+
+namespace SharpTables
 {
 	/// <summary>
 	/// Represents a cell in a table.
@@ -19,6 +21,8 @@
 		/// Gets or sets the padding value of the cell.
 		/// </summary>
 		public int Padding { get; set; } = 5;
+
+		public Vector2 Position { get; internal set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Cell"/> class with the specified text.

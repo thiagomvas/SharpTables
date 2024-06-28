@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 
 namespace SharpTables
 {
@@ -7,7 +8,7 @@ namespace SharpTables
 		/// <summary>
 		/// Gets or sets the rows of the table
 		/// </summary>
-		public List<Row> Rows { get; set; }
+		private List<Row> rows { get; set; }
 
 		/// <summary>
 		/// Gets or sets the alignment used when parsing numbers
@@ -34,7 +35,7 @@ namespace SharpTables
 		/// </summary>
 		public Table()
 		{
-			Rows = new List<Row>();
+			rows = new List<Row>();
 			Formatting = new Formatting();
 		}
 
@@ -44,7 +45,7 @@ namespace SharpTables
 		/// <param name="formatting">The formatting to apply to the table.</param>
 		public Table(Formatting formatting)
 		{
-			Rows = new List<Row>();
+			rows = new List<Row>();
 			Formatting = formatting;
 		}
 
@@ -54,7 +55,32 @@ namespace SharpTables
 		/// <param name="row">The row to add.</param>
 		public void AddRow(Row row)
 		{
-			Rows.Add(row);
+			row.LineIndex = rows.Count;
+			for(int i = 0; i < row.Cells.Count; i++)
+			{
+				row.Cells[i].Position = new Vector2(i, row.LineIndex);
+			}
+			rows.Add(row);
+		}
+
+		/// <summary>
+		/// Adds a header row to the top of the table. Can also be used to add a normal row to the top of the list.
+		/// </summary>
+		/// <param name="row">The row to add</param>
+		public void AddHeaderRow(Row row)
+		{
+			rows.Insert(0, row);
+		}
+
+		public void UsePreset(Action<Cell> presetter)
+		{
+			foreach (Row row in rows)
+			{
+				foreach (Cell cell in row.Cells)
+				{
+					presetter(cell);
+				}
+			}
 		}
 
 		/// <summary>
@@ -65,9 +91,9 @@ namespace SharpTables
 		/// <param name="changeHeaderColor">Whether to change the color of the header cell in the column.</param>
 		public void SetColumnColor(int column, ConsoleColor color, bool changeHeaderColor = false)
 		{
-			foreach (Row row in Rows)
+			foreach (Row row in rows)
 			{
-				if (!changeHeaderColor && row == Rows[0])
+				if (!changeHeaderColor && row == rows[0])
 				{
 					continue;
 				}
@@ -86,9 +112,9 @@ namespace SharpTables
 		/// <param name="changeHeaderPadding">Whether to change the padding of the header cell in the column.</param>
 		public void SetColumnPadding(int column, int padding, bool changeHeaderPadding = false)
 		{
-			foreach (Row row in Rows)
+			foreach (Row row in rows)
 			{
-				if (!changeHeaderPadding && row == Rows[0])
+				if (!changeHeaderPadding && row == rows[0])
 				{
 					continue;
 				}
@@ -106,9 +132,9 @@ namespace SharpTables
 		public void Print()
 		{
 			// Setup
-			int[] widestCellPerColumn = new int[Rows.Max(r => r.Cells.Count)];
-			int columnCount = Rows[0].Cells.Count;
-			foreach (Row row in Rows)
+			int[] widestCellPerColumn = new int[rows.Max(r => r.Cells.Count)];
+			int columnCount = rows[0].Cells.Count;
+			foreach (Row row in rows)
 			{
 				for (int i = 0; i < row.Cells.Count; i++)
 				{
@@ -126,7 +152,7 @@ namespace SharpTables
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.TopLeftDivider, Formatting.Header.TopMiddleDivider, Formatting.Header.TopRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 
 			// Print the header row
-			Row headerRow = Rows.First();
+			Row headerRow = rows.First();
 			foreach (var cell in headerRow.Cells)
 			{
 				Console.ForegroundColor = Formatting.Header.DividerColor;
@@ -149,7 +175,7 @@ namespace SharpTables
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 			}
 
-			foreach (Row row in Rows.Skip(1))
+			foreach (Row row in rows.Skip(1))
 			{
 				// Print the row with cell values
 				for (int i = 0; i < columnCount; i++)
@@ -177,7 +203,7 @@ namespace SharpTables
 				Console.ResetColor();
 
 				// Print the middle divider
-				if (row != Rows.Last())
+				if (row != rows.Last())
 				{
 					PrintHorizontalDivider(widestCellPerColumn, Formatting.LeftMiddleDivider, Formatting.MiddleDivider, Formatting.RightMiddleDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
 				}
@@ -198,9 +224,9 @@ namespace SharpTables
 			StringBuilder sb = new StringBuilder();
 
 			// Setup
-			int[] widestCellPerColumn = new int[Rows.Max(r => r.Cells.Count)];
-			int columnCount = Rows[0].Cells.Count;
-			foreach (Row row in Rows)
+			int[] widestCellPerColumn = new int[rows.Max(r => r.Cells.Count)];
+			int columnCount = rows[0].Cells.Count;
+			foreach (Row row in rows)
 			{
 				for (int i = 0; i < row.Cells.Count; i++)
 				{
@@ -218,7 +244,7 @@ namespace SharpTables
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.Header.TopLeftDivider, Formatting.Header.TopMiddleDivider, Formatting.Header.TopRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor));
 
 			// Print the header row
-			Row headerRow = Rows.First();
+			Row headerRow = rows.First();
 			foreach (var cell in headerRow.Cells)
 			{
 				sb.Append($"{Formatting.Header.VerticalDivider}");
@@ -236,7 +262,7 @@ namespace SharpTables
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor));
 			}
 
-			foreach (Row row in Rows.Skip(1))
+			foreach (Row row in rows.Skip(1))
 			{
 				// Print the row with cell values
 				for (int i = 0; i < columnCount; i++)
@@ -259,7 +285,7 @@ namespace SharpTables
 				sb.AppendLine($"{Formatting.VerticalDivider}");
 
 				// Print the middle divider
-				if (row != Rows.Last())
+				if (row != rows.Last())
 				{
 					sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.LeftMiddleDivider, Formatting.MiddleDivider, Formatting.RightMiddleDivider, Formatting.HorizontalDivider, Formatting.DividerColor));
 				}
@@ -320,6 +346,47 @@ namespace SharpTables
 				table.AddRow(new Row(row));
 			}
 			return table;
+		}
+
+		/// <summary>
+		/// Creates a table from a collection of data with a function to produce rows based on each item.
+		/// </summary>
+		/// <typeparam name="T">The type of item being added.</typeparam>
+		/// <param name="data">The dataset</param>
+		/// <param name="generatorFunc">The function used to generate rows</param>
+		/// <returns>A table generated from every element in the dataset</returns>
+		public static Table FromDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc)
+		{
+			Table result = new();
+			foreach (T item in data)
+			{
+				Row row = generatorFunc(item);
+				result.AddRow(row);
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Creates a table from a collection of data with a function to produce rows based on each item.
+		/// </summary>
+		/// <typeparam name="T">The type of item being added.</typeparam>
+		/// <param name="data">The dataset</param>
+		/// <param name="generatorFunc">The function used to generate rows</param>
+		/// <param name="cellColorer">The function used to color cells</param>
+		/// <returns>A table generated from every element in the dataset</returns>
+		public static Table FromDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc, Func<T, ConsoleColor> cellColorer)
+		{
+			Table result = new();
+			foreach (T item in data)
+			{
+				Row row = generatorFunc(item);
+				foreach (Cell cell in row.Cells)
+				{
+					cell.Color = cellColorer(item);
+				}
+				result.AddRow(row);
+			}
+			return result;
 		}
 
 		private void PrintHorizontalDivider(int[] columnWidths, char left, char middle, char right, char horizontal, ConsoleColor dividerColor)
