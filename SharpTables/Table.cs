@@ -6,6 +6,11 @@ namespace SharpTables
 	public class Table
 	{
 		/// <summary>
+		/// Gets the header of the table. To modify it, use <see cref="SetHeader(Row)"/>
+		/// </summary>
+		/// <remarks>By default, the first row added will become the header unless <see cref="SetHeader(Row)"/> is called</remarks>
+		public Row Header { get; private set; }
+		/// <summary>
 		/// Gets or sets the rows of the table
 		/// </summary>
 		private List<Row> rows { get; set; }
@@ -35,6 +40,10 @@ namespace SharpTables
 		/// <param name="row">The row to add.</param>
 		public void AddRow(Row row)
 		{
+			if(Header == null)
+			{
+				Header = row;
+			}
 			row.LineIndex = rows.Count;
 			for (int i = 0; i < row.Cells.Count; i++)
 			{
@@ -44,12 +53,14 @@ namespace SharpTables
 		}
 
 		/// <summary>
-		/// Adds a header row to the top of the table. Can also be used to add a normal row to the top of the list.
+		/// Sets the header of the table. 
 		/// </summary>
 		/// <param name="row">The row to add</param>
-		public void AddHeaderRow(Row row)
+		public void SetHeader(Row row)
 		{
-			rows.Insert(0, row);
+			Header = row;
+			foreach (var cell in row.Cells)
+				cell.Padding = 0;
 		}
 
 		/// <summary>
@@ -72,9 +83,11 @@ namespace SharpTables
 		public void Print()
 		{
 			// Setup
-			int[] widestCellPerColumn = new int[rows.Max(r => r.Cells.Count)];
-			int columnCount = rows[0].Cells.Count;
-			foreach (Row row in rows)
+			var temp = rows.ToList();
+			temp.Add(Header);
+			int[] widestCellPerColumn = new int[temp.Max(r => r.Cells.Count)];
+			int columnCount = temp[0].Cells.Count;
+			foreach (Row row in temp)
 			{
 				for (int i = 0; i < row.Cells.Count; i++)
 				{
@@ -92,7 +105,7 @@ namespace SharpTables
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.TopLeftDivider, Formatting.Header.TopMiddleDivider, Formatting.Header.TopRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 
 			// Print the header row
-			Row headerRow = rows.First();
+			Row headerRow = Header;
 			foreach (var cell in headerRow.Cells)
 			{
 				Console.ForegroundColor = Formatting.Header.DividerColor;
@@ -115,7 +128,7 @@ namespace SharpTables
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 			}
 
-			foreach (Row row in rows.Skip(1))
+			foreach (Row row in rows)
 			{
 				// Print the row with cell values
 				for (int i = 0; i < columnCount; i++)
@@ -161,11 +174,12 @@ namespace SharpTables
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
-
+			var temp = rows.ToList();
+			temp.Add(Header);
 			// Setup
-			int[] widestCellPerColumn = new int[rows.Max(r => r.Cells.Count)];
-			int columnCount = rows[0].Cells.Count;
-			foreach (Row row in rows)
+			int[] widestCellPerColumn = new int[temp.Max(r => r.Cells.Count)];
+			int columnCount = temp[0].Cells.Count;
+			foreach (Row row in temp)
 			{
 				for (int i = 0; i < row.Cells.Count; i++)
 				{
@@ -183,7 +197,7 @@ namespace SharpTables
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.Header.TopLeftDivider, Formatting.Header.TopMiddleDivider, Formatting.Header.TopRightDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor));
 
 			// Print the header row
-			Row headerRow = rows.First();
+			Row headerRow = Header;
 			foreach (var cell in headerRow.Cells)
 			{
 				sb.Append($"{Formatting.Header.VerticalDivider}");
@@ -201,7 +215,7 @@ namespace SharpTables
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor));
 			}
 
-			foreach (Row row in rows.Skip(1))
+			foreach (Row row in rows)
 			{
 				// Print the row with cell values
 				for (int i = 0; i < columnCount; i++)
