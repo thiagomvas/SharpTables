@@ -347,6 +347,35 @@ namespace SharpTables
 			}
 		}
 
+		/// <summary>
+		/// Converts the table to a markdown string.
+		/// </summary>
+		/// <returns>The markdown representation of this table</returns>
+		/// <remarks>Styling and custom table formatting not included. If the custom formatting is needed, use <see cref="ToString()"/></remarks>
+		public string ToMarkdown()
+		{
+			StringBuilder sb = new();
+			// Header
+			sb.Append("|");
+			foreach(var cell in Header.Cells)
+				sb.Append($"{cell.Text}|");
+			sb.AppendLine();
+			sb.Append("| ");
+			foreach (var cell in Header.Cells)
+				sb.Append($"- | ");
+			sb.AppendLine();
+
+			// Rows
+			foreach (var row in rows)
+			{
+				sb.Append("| ");
+				foreach (var cell in row.Cells)
+					sb.Append($"{cell.Text} | ");
+				sb.AppendLine();
+			}
+
+			return sb.ToString();
+		}
 		private void PrintHorizontalDivider(int[] columnWidths, char left, char middle, char right, char horizontal, ConsoleColor dividerColor)
 		{
 			Console.ForegroundColor = dividerColor;
