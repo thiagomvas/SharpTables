@@ -77,6 +77,13 @@ namespace SharpTables
 		/// </summary>
 		public void Print()
 		{
+			foreach(var row in rows)
+			{
+				foreach(var cell in row.Cells)
+				{
+					presetter?.Invoke(cell);
+				}
+			}
 			// Setup
 			var temp = rows.ToList();
 			temp.Add(Header);
@@ -296,6 +303,48 @@ namespace SharpTables
 				result.AddRow(row);
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Adds a two-dimensional array of data to the table.
+		/// </summary>
+		/// <param name="data">The data to be added</param>
+		public void AddDataSet(object[,] data)
+		{
+			for (int i = 0; i < data.GetLength(0); i++)
+			{
+				object[] row = new object[data.GetLength(1)];
+				for (int j = 0; j < data.GetLength(1); j++)
+				{
+					row[j] = data[i, j];
+				}
+				AddRow(new Row(row));
+			}
+		}
+		/// <summary>
+		/// Adds a collection of data to the table.
+		/// </summary>
+		/// <param name="data">The data to be added</param>
+		public void AddDataSet(IEnumerable<IEnumerable<object>> data)
+		{
+			foreach (IEnumerable<object> row in data)
+			{
+				AddRow(new Row(row));
+			}
+		}
+		/// <summary>
+		/// Adds a collection of data to the table with a function to produce rows based on each item.
+		/// </summary>
+		/// <typeparam name="T">The type of item being added.</typeparam>
+		/// <param name="data">The dataset</param>
+		/// <param name="generatorFunc">The function used to generate rows</param>
+		public void AddDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc)
+		{
+			foreach (T item in data)
+			{
+				Row row = generatorFunc(item);
+				AddRow(row);
+			}
 		}
 
 		private void PrintHorizontalDivider(int[] columnWidths, char left, char middle, char right, char horizontal, ConsoleColor dividerColor)
