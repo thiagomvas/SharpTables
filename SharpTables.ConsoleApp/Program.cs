@@ -21,18 +21,18 @@ List<Foo> foos = new List<Foo>
 };
 
 Table table = Table.FromDataSet(foos, f => new(f.C, f.B, f.A)); // Novo overload: Passar uma lista de elementos e uma factory ou gerador de linhas usando esses elementos.
-																//table.Formatting = tableFormatting;
+table.Formatting = tableFormatting;
 
-// Agr posso aplicar preset por celula.
 table.UsePreset(c =>
 {
-	if (bool.TryParse(c.Text, out bool b))
+	if (c.IsBool)
 	{
+		bool b = c.GetValue<bool>();
 		c.Text = b ? "V" : "X";
 		c.Alignment = Alignment.Center;
 		c.Color = b ? ConsoleColor.Green : ConsoleColor.Red;
 	}
-	if (int.TryParse(c.Text, out int i))
+	if (c.IsNumeric)
 	{
 		c.Color = ConsoleColor.Yellow;
 		c.Padding = 0;
@@ -51,7 +51,6 @@ foreach(var cell in table.Header.Cells)
 }
 
 table.Print();
-
 
 class Foo
 {
