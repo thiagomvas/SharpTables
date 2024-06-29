@@ -71,7 +71,7 @@ namespace SharpTables
 		public void UsePreset(Action<Cell> presetter)
 		{
 			this.presetter = presetter;
-				}
+		}
 		/// <summary>
 		/// Prints the table to the console.
 		/// </summary>
@@ -376,6 +376,40 @@ namespace SharpTables
 
 			return sb.ToString();
 		}
+
+		/// <summary>
+		/// Converts the table to a HTML table.
+		/// </summary>
+		/// <param name="singleLine">Whether to remove newlines from the output</param>
+		/// <returns>The HTML representation of this table</returns>
+		/// <remarks>Styling and custom table formatting not included. If the custom formatting is needed, use <see cref="ToString()"/></remarks>
+		public string ToHtml(bool singleLine = false)
+		{
+			StringBuilder sb = new();
+			sb.AppendLine("<table>");
+			sb.AppendLine("<thead>");
+			sb.AppendLine("<tr>");
+			foreach (var cell in Header.Cells)
+				sb.AppendLine($"<th>{cell.Text}</th>");
+			sb.AppendLine("</tr>");
+			sb.AppendLine("</thead>");
+			sb.AppendLine("<tbody>");
+			foreach (var row in rows)
+			{
+				sb.AppendLine("<tr>");
+				foreach (var cell in row.Cells)
+					sb.AppendLine($"<td>{cell.Text}</td>");
+				sb.AppendLine("</tr>");
+			}
+			sb.AppendLine("</tbody>");
+			sb.AppendLine("</table>");
+
+			if (singleLine)
+				sb.Replace("\n", "").Replace("\r", "");
+
+			return sb.ToString();
+		}
+
 		private void PrintHorizontalDivider(int[] columnWidths, char left, char middle, char right, char horizontal, ConsoleColor dividerColor)
 		{
 			Console.ForegroundColor = dividerColor;

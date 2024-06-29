@@ -21,8 +21,7 @@ List<Foo> foos = new List<Foo>
 };
 
 Table table = Table.FromDataSet(foos, f => new(f.C, f.B, f.A)); // Novo overload: Passar uma lista de elementos e uma factory ou gerador de linhas usando esses elementos.
-//table.Formatting = tableFormatting;
-table.EmptyReplacement = "N/A";
+																//table.Formatting = tableFormatting;
 
 // Agr posso aplicar preset por celula.
 table.UsePreset(c =>
@@ -40,8 +39,10 @@ table.UsePreset(c =>
 		c.Alignment = Alignment.Right;
 	}
 });
-table.SetHeader(new Row("Is Active", "Name", "ID")); // Define uma row como header ao inves de usar a primeira linha do dataset.
+table.EmptyReplacement = "N/A";
 
+table.SetHeader(new Row("Is Active", "Name", "ID")); // Define uma row como header ao inves de usar a primeira linha do dataset.
+table.AddDataSet(foos, f => new(f.C, f.B, f.A)); // Adiciona um dataset ao inves de substituir o existente.
 foreach(var cell in table.Header.Cells)
 {
 	cell.Alignment = Alignment.Center;
