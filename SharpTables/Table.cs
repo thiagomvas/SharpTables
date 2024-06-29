@@ -5,6 +5,7 @@ namespace SharpTables
 {
 	public class Table
 	{
+		private Action<Cell> presetter;
 		/// <summary>
 		/// Gets the header of the table. To modify it, use <see cref="SetHeader(Row)"/>
 		/// </summary>
@@ -64,19 +65,13 @@ namespace SharpTables
 		}
 
 		/// <summary>
-		/// Applies a preset action to every cell in the table. This is only applied to cells that are already in the table.
+		/// Applies a preset action to every cell in the table. 
 		/// </summary>
 		/// <param name="presetter"></param>
 		public void UsePreset(Action<Cell> presetter)
 		{
-			foreach (Row row in rows)
-			{
-				foreach (Cell cell in row.Cells)
-				{
-					presetter(cell);
+			this.presetter = presetter;
 				}
-			}
-		}
 		/// <summary>
 		/// Prints the table to the console.
 		/// </summary>
