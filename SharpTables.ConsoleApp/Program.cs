@@ -1,4 +1,5 @@
-﻿using SharpTables;
+﻿using Bogus;
+using SharpTables;
 using SharpTables.Annotations;
 
 
@@ -35,51 +36,51 @@ Action<Cell> cellPreset = c =>
     }
 };
 
-List<Foo> foos = new List<Foo>
+var faker = new Faker<Order>()
+    .RuleFor(o => o.Id, f => f.Random.Guid())
+    .RuleFor(o => o.Item, f => f.Commerce.ProductName())
+    .RuleFor(o => o.Quantity, f => f.Random.Number(1, 10))
+    .RuleFor(o => o.Price, f => f.Random.Double(1, 100));
+
+var dataset = faker.Generate(100);
+foreach (var item in dataset)
 {
-    new Foo { A = 1, B = "Hello", C = null },
-    new Foo { A = 2, B = "World", C = false },
-    new Foo { A = 3, B = "Something", C = true },
-};
-
-Foo[] otherFoos = new Foo[]
-{
-    new Foo { A = 4, B = "Bye", C = true },
-    new Foo { A = null, B = "World", C = false },
-    new Foo { A = 6, B = null, C = false}
-};
-
-var t = Table.FromDataSet(foos)
-    .UseFormatting(tableFormatting)
-    .AddDataSet(otherFoos)
-    .UseNullOrEmptyReplacement("NULL")
-    .UsePreset(cellPreset)
-    .DisplayRowCount()
-    .DisplayRowIndexes();
-t.Print();
-string str = t.ToString();
-Console.WriteLine(str);
-
-
-
-class Foo
-{
-    [TableOrder(1)]
-    [TableColor(ConsoleColor.Red)]
-    [TableAlignment(Alignment.Right)]
-    [TableDisplayName("Some Int")]
-    public int? A { get; set; }
-
-    [TableDisplayName("Some String")]
-    [TableColor(ConsoleColor.Cyan)]
-    [TableAlignment(Alignment.Right)]
-    public string? B { get; set; }
-
-    [TableOrder(0)]
-    public bool? C { get; set; }
-    private double D { get; set; } = 1.234;
-    public string E = "Field!";
-    public static string F = "Static!";
-    public static string G { get; set; } = "Static PROP!";
+    item.Price = Math.Round(item.Price, 2);
 }
 
+var pages = Table.FromDataSet(dataset)
+    .UseFormatting(tableFormatting)
+    .UseNullOrEmptyReplacement("NULL")
+    .UsePreset(cellPreset)
+    .DisplayRowIndexes()
+    .ToPaginatedTable(10);
+
+while (true)
+{
+    Console.Clear();
+    pages.PrintCurrentPage();
+    Console.WriteLine("[<-] Previous Page | [->] Next Page");
+
+    var key = Console.ReadKey().Key;
+    if (key == ConsoleKey.LeftArrow)
+    {
+        pages.PreviousPage();
+    }
+    else if (key == ConsoleKey.RightArrow)
+    {
+        pages.NextPage();
+    }
+    else
+    {
+        break;
+    }
+}
+
+
+class Order
+{
+    public Guid Id { get; set; }
+    public string Item { get; set; }
+    public int Quantity { get; set; }
+    public double Price { get; set; }
+}

@@ -117,6 +117,17 @@ namespace SharpTables
         }
 
         /// <summary>
+        /// Applies a color to the row indexes.
+        /// </summary>
+        /// <param name="color">The row index color</param>
+        /// <returns>The table with changes applied</returns>
+        public Table UseRowIndexColor(ConsoleColor color)
+        {
+            Settings.RowIndexColor = color;
+            return this;
+        }
+
+        /// <summary>
         /// Defines a replacement string for null or empty string values in the cells.
         /// </summary>
         /// <param name="replacement">The replacement string</param>
@@ -126,210 +137,7 @@ namespace SharpTables
             Settings.NullOrEmptyReplacement = replacement;
             return this;
         }
-        /// <summary>
-        /// Prints the table to the console.
-        /// </summary>
-        public void Print()
-        {
-            var rows = Rows.Select(r => r.Clone()).ToList();
-            foreach (var row in rows)
-            {
-                if (Settings.DisplayRowIndexes)
-                {
-                    row.Cells.Insert(0, new Cell(row.LineIndex + 1) { Padding = 0, Alignment = Alignment.Right, Color = Settings.RowIndexColor });
-                }
-            }
-            StringBuilder sb = new StringBuilder();
-            var temp = rows.ToList();
-            var tempHeader = Header.Clone();
-            if (Settings.DisplayRowIndexes)
-            {
-                tempHeader.Cells.Insert(0, new Cell(" ") { Padding = 0, Alignment = Alignment.Right });
-            }
-            temp.Add(tempHeader);
-            // Setup
-            int[] widestCellPerColumn = new int[tempHeader.Cells.Count];
-            foreach (Row row in temp)
-            {
-                for (int i = 0; i < row.Cells.Count; i++)
-                {
-                    var cell = row.Cells[i];
-                    int cellWidth = Utils.MeasureStringWidth(cell.Text) + cell.Padding;
-                    if (cellWidth > widestCellPerColumn[i])
-                    {
-                        widestCellPerColumn[i] = cellWidth;
-                    }
-                }
 
-            }
-            int columnCount = tempHeader.Cells.Count;
-
-            // Print the header dividers
-            if (Settings.TableFormatting.Header.HasTopDivider)
-                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.TopLeftDivider, Settings.TableFormatting.Header.TopMiddleDivider, Settings.TableFormatting.Header.TopRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor);
-
-            // Print the header row
-            Row headerRow = tempHeader;
-            foreach (var cell in headerRow.Cells)
-            {
-                Console.ForegroundColor = Settings.TableFormatting.Header.DividerColor;
-                Console.Write(Settings.TableFormatting.Header.VerticalDivider);
-                Console.ForegroundColor = cell.Color;
-                Console.Write(GetCellString(cell, widestCellPerColumn[headerRow.Cells.IndexOf(cell)]));
-                Console.ResetColor();
-            }
-            Console.ForegroundColor = Settings.TableFormatting.Header.DividerColor;
-            Console.WriteLine(Settings.TableFormatting.Header.VerticalDivider);
-            Console.ResetColor();
-
-            if (Settings.TableFormatting.Header.Separated)
-            {
-                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.BottomLeftDivider, Settings.TableFormatting.Header.BottomMiddleDivider, Settings.TableFormatting.Header.BottomRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor);
-                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.TopLeftDivider, Settings.TableFormatting.TopMiddleDivider, Settings.TableFormatting.TopRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor);
-            }
-            else
-            {
-                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.LeftMiddleDivider, Settings.TableFormatting.Header.MiddleDivider, Settings.TableFormatting.Header.RightMiddleDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor);
-            }
-
-            foreach (Row row in rows)
-            {
-                // Print the row with cell values
-                for (int i = 0; i < columnCount; i++)
-                {
-                    // If the row has fewer cells than the header, add empty cells
-                    if (i >= row.Cells.Count)
-                    {
-                        row.Cells.Add(new Cell(""));
-                    }
-
-                    Cell cell = row.Cells[i];
-                    if (string.IsNullOrWhiteSpace(cell.Text) || cell.IsNull)
-                    {
-                        cell.Text = Settings.NullOrEmptyReplacement;
-                    }
-                    string cellText = GetCellString(cell, widestCellPerColumn[i]);
-                    Console.ForegroundColor = Settings.TableFormatting.DividerColor;
-                    Console.Write(Settings.TableFormatting.VerticalDivider);
-                    Console.ForegroundColor = cell.Color;
-                    Console.Write(cellText);
-                    Console.ResetColor();
-                }
-                Console.ForegroundColor = Settings.TableFormatting.DividerColor;
-                Console.WriteLine(Settings.TableFormatting.VerticalDivider);
-                Console.ResetColor();
-
-                // Print the middle divider
-                if (row != rows.Last())
-                {
-                    PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.LeftMiddleDivider, Settings.TableFormatting.MiddleDivider, Settings.TableFormatting.RightMiddleDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor);
-                }
-            }
-
-            // Print the bottom divider
-            PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.BottomLeftDivider, Settings.TableFormatting.BottomMiddleDivider, Settings.TableFormatting.BottomRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor);
-            if(Settings.DisplayRowCount)
-                Console.WriteLine($"Row count: {rows.Count}");
-        }
-
-
-        /// <summary>
-        /// Converts the table to its string representation.
-        /// </summary>
-        /// <returns>The string representation of the table.</returns>
-        public override string ToString()
-        {
-            var rows = Rows.Select(r => r.Clone()).ToList();
-            foreach (var row in rows)
-            {
-                if (Settings.DisplayRowIndexes)
-                {
-                    row.Cells.Insert(0, new Cell(row.LineIndex + 1) { Padding = 0, Alignment = Alignment.Right, Color = Settings.RowIndexColor });
-                }
-            }
-            StringBuilder sb = new StringBuilder();
-            var temp = rows.ToList();
-            var tempHeader = Header.Clone();
-            if (Settings.DisplayRowIndexes)
-            {
-                tempHeader.Cells.Insert(0, new Cell(" ") { Padding = 0, Alignment = Alignment.Right });
-            }
-            temp.Add(tempHeader);
-            // Setup
-            int[] widestCellPerColumn = new int[tempHeader.Cells.Count];
-            foreach (Row row in temp)
-            {
-                for (int i = 0; i < row.Cells.Count; i++)
-                {
-                    var cell = row.Cells[i];
-                    int cellWidth = Utils.MeasureStringWidth(cell.Text) + cell.Padding;
-                    if (cellWidth > widestCellPerColumn[i])
-                    {
-                        widestCellPerColumn[i] = cellWidth;
-                    }
-                }
-
-            }
-            int columnCount = temp[0].Cells.Count;
-
-            // Print the header dividers
-            if (Settings.TableFormatting.Header.HasTopDivider)
-                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.TopLeftDivider, Settings.TableFormatting.Header.TopMiddleDivider, Settings.TableFormatting.Header.TopRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor));
-
-            // Print the header row
-            Row headerRow = tempHeader;
-            for (int i = 0; i < columnCount; i++)
-            {
-                Cell? cell = headerRow.Cells[i];
-                sb.Append($"{Settings.TableFormatting.Header.VerticalDivider}");
-                sb.Append($"{Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i])}");
-            }
-            sb.AppendLine($"{Settings.TableFormatting.Header.VerticalDivider}");
-
-            if (Settings.TableFormatting.Header.Separated)
-            {
-                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.BottomLeftDivider, Settings.TableFormatting.Header.BottomMiddleDivider, Settings.TableFormatting.Header.BottomRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor));
-                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.TopLeftDivider, Settings.TableFormatting.TopMiddleDivider, Settings.TableFormatting.TopRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor));
-            }
-            else
-            {
-                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.LeftMiddleDivider, Settings.TableFormatting.Header.MiddleDivider, Settings.TableFormatting.Header.RightMiddleDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor));
-            }
-
-            foreach (Row row in rows)
-            {
-                // Print the row with cell values
-                for (int i = 0; i < columnCount; i++)
-                {
-                    // If the row has fewer cells than the header, add empty cells
-                    if (i >= row.Cells.Count)
-                    {
-                        row.Cells.Add(new Cell(""));
-                    }
-
-                    Cell cell = row.Cells[i];
-                    if (string.IsNullOrWhiteSpace(cell.Text))
-                    {
-                        cell.Text = Settings.NullOrEmptyReplacement;
-                    }
-                    string cellText = GetCellString(cell, widestCellPerColumn[i]);
-                    sb.Append($"{Settings.TableFormatting.VerticalDivider}");
-                    sb.Append($"{cellText}");
-                }
-                sb.AppendLine($"{Settings.TableFormatting.VerticalDivider}");
-
-                // Print the middle divider
-                if (row != rows.Last())
-                {
-                    sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.LeftMiddleDivider, Settings.TableFormatting.MiddleDivider, Settings.TableFormatting.RightMiddleDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor));
-                }
-            }
-
-            // Print the bottom divider
-            sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.BottomLeftDivider, Settings.TableFormatting.BottomMiddleDivider, Settings.TableFormatting.BottomRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor));
-
-            return sb.ToString();
-        }
 
         /// <summary>
         /// Creates a table from a two-dimensional array of data.
@@ -443,6 +251,237 @@ namespace SharpTables
             return this;
         }
 
+        /// <summary>
+        /// Converts the table to a paginated table with the given number of rows per page.
+        /// </summary>
+        /// <param name="rowsPerPage">The number of rows per page</param>
+        /// <returns>
+        /// A paginated table with the given number of rows per page.
+        /// </returns>
+        public PaginatedTable ToPaginatedTable(int rowsPerPage)
+        {
+            List<Table> pages = new();
+            for (int i = 0; i < Rows.Count; i += rowsPerPage)
+            {
+                Table page = new();
+                page.Settings = this.Settings;
+                page.Header = Header;
+                page.Rows = Rows.Skip(i).Take(rowsPerPage).ToList();
+                pages.Add(page);
+            }
+            return new PaginatedTable(pages);
+        }
+
+        /// <summary>
+        /// Prints the table to the console.
+        /// </summary>
+        public void Print()
+        {
+            var rows = Rows.Select(r => r.Clone()).ToList();
+            foreach (var row in rows)
+            {
+                if (Settings.DisplayRowIndexes)
+                {
+                    row.Cells.Insert(0, new Cell(row.LineIndex + 1) { Padding = 0, Alignment = Alignment.Right, Color = Settings.RowIndexColor });
+                }
+                foreach (var cell in row.Cells)
+                {
+                    if (cell.IsNull)
+                        cell.Text = Settings.NullOrEmptyReplacement;
+
+                    Settings.CellPreset?.Invoke(cell);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            var temp = rows.ToList();
+            var tempHeader = Header.Clone();
+            if (Settings.DisplayRowIndexes)
+            {
+                tempHeader.Cells.Insert(0, new Cell(" ") { Padding = 0, Alignment = Alignment.Right });
+            }
+            temp.Add(tempHeader);
+            // Setup
+            int[] widestCellPerColumn = new int[tempHeader.Cells.Count];
+            foreach (Row row in temp)
+            {
+                for (int i = 0; i < row.Cells.Count; i++)
+                {
+                    var cell = row.Cells[i];
+                    int cellWidth = Utils.MeasureStringWidth(cell.Text) + cell.Padding;
+                    if (cellWidth > widestCellPerColumn[i])
+                    {
+                        widestCellPerColumn[i] = cellWidth;
+                    }
+                }
+
+            }
+            int columnCount = tempHeader.Cells.Count;
+
+            // Print the header dividers
+            if (Settings.TableFormatting.Header.HasTopDivider)
+                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.TopLeftDivider, Settings.TableFormatting.Header.TopMiddleDivider, Settings.TableFormatting.Header.TopRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor);
+
+            // Print the header row
+            Row headerRow = tempHeader;
+            foreach (var cell in headerRow.Cells)
+            {
+                Console.ForegroundColor = Settings.TableFormatting.Header.DividerColor;
+                Console.Write(Settings.TableFormatting.Header.VerticalDivider);
+                Console.ForegroundColor = cell.Color;
+                Console.Write(GetCellString(cell, widestCellPerColumn[headerRow.Cells.IndexOf(cell)]));
+                Console.ResetColor();
+            }
+            Console.ForegroundColor = Settings.TableFormatting.Header.DividerColor;
+            Console.WriteLine(Settings.TableFormatting.Header.VerticalDivider);
+            Console.ResetColor();
+
+            if (Settings.TableFormatting.Header.Separated)
+            {
+                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.BottomLeftDivider, Settings.TableFormatting.Header.BottomMiddleDivider, Settings.TableFormatting.Header.BottomRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor);
+                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.TopLeftDivider, Settings.TableFormatting.TopMiddleDivider, Settings.TableFormatting.TopRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor);
+            }
+            else
+            {
+                PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.LeftMiddleDivider, Settings.TableFormatting.Header.MiddleDivider, Settings.TableFormatting.Header.RightMiddleDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor);
+            }
+
+            foreach (Row row in rows)
+            {
+                // Print the row with cell values
+                for (int i = 0; i < columnCount; i++)
+                {
+                    // If the row has fewer cells than the header, add empty cells
+                    if (i >= row.Cells.Count)
+                    {
+                        row.Cells.Add(new Cell(""));
+                    }
+
+                    Cell cell = row.Cells[i];
+                    if (string.IsNullOrWhiteSpace(cell.Text) || cell.IsNull)
+                    {
+                        cell.Text = Settings.NullOrEmptyReplacement;
+                    }
+                    string cellText = GetCellString(cell, widestCellPerColumn[i]);
+                    Console.ForegroundColor = Settings.TableFormatting.DividerColor;
+                    Console.Write(Settings.TableFormatting.VerticalDivider);
+                    Console.ForegroundColor = cell.Color;
+                    Console.Write(cellText);
+                    Console.ResetColor();
+                }
+                Console.ForegroundColor = Settings.TableFormatting.DividerColor;
+                Console.WriteLine(Settings.TableFormatting.VerticalDivider);
+                Console.ResetColor();
+
+                // Print the middle divider
+                if (row != rows.Last())
+                {
+                    PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.LeftMiddleDivider, Settings.TableFormatting.MiddleDivider, Settings.TableFormatting.RightMiddleDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor);
+                }
+            }
+
+            // Print the bottom divider
+            PrintHorizontalDivider(widestCellPerColumn, Settings.TableFormatting.BottomLeftDivider, Settings.TableFormatting.BottomMiddleDivider, Settings.TableFormatting.BottomRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor);
+            if (Settings.DisplayRowCount)
+                Console.WriteLine($"Row count: {rows.Count}");
+        }
+
+        /// <summary>
+        /// Converts the table to its string representation.
+        /// </summary>
+        /// <returns>The string representation of the table.</returns>
+        public override string ToString()
+        {
+            var rows = Rows.Select(r => r.Clone()).ToList();
+            foreach (var row in rows)
+            {
+                if (Settings.DisplayRowIndexes)
+                {
+                    row.Cells.Insert(0, new Cell(row.LineIndex + 1) { Padding = 0, Alignment = Alignment.Right, Color = Settings.RowIndexColor });
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            var temp = rows.ToList();
+            var tempHeader = Header.Clone();
+            if (Settings.DisplayRowIndexes)
+            {
+                tempHeader.Cells.Insert(0, new Cell(" ") { Padding = 0, Alignment = Alignment.Right });
+            }
+            temp.Add(tempHeader);
+            // Setup
+            int[] widestCellPerColumn = new int[tempHeader.Cells.Count];
+            foreach (Row row in temp)
+            {
+                for (int i = 0; i < row.Cells.Count; i++)
+                {
+                    var cell = row.Cells[i];
+                    int cellWidth = Utils.MeasureStringWidth(cell.Text) + cell.Padding;
+                    if (cellWidth > widestCellPerColumn[i])
+                    {
+                        widestCellPerColumn[i] = cellWidth;
+                    }
+                }
+
+            }
+            int columnCount = temp[0].Cells.Count;
+
+            // Print the header dividers
+            if (Settings.TableFormatting.Header.HasTopDivider)
+                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.TopLeftDivider, Settings.TableFormatting.Header.TopMiddleDivider, Settings.TableFormatting.Header.TopRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor));
+
+            // Print the header row
+            Row headerRow = tempHeader;
+            for (int i = 0; i < columnCount; i++)
+            {
+                Cell? cell = headerRow.Cells[i];
+                sb.Append($"{Settings.TableFormatting.Header.VerticalDivider}");
+                sb.Append($"{Utils.ResizeStringToWidth(cell.Text, widestCellPerColumn[i])}");
+            }
+            sb.AppendLine($"{Settings.TableFormatting.Header.VerticalDivider}");
+
+            if (Settings.TableFormatting.Header.Separated)
+            {
+                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.BottomLeftDivider, Settings.TableFormatting.Header.BottomMiddleDivider, Settings.TableFormatting.Header.BottomRightDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor));
+                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.TopLeftDivider, Settings.TableFormatting.TopMiddleDivider, Settings.TableFormatting.TopRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor));
+            }
+            else
+            {
+                sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.Header.LeftMiddleDivider, Settings.TableFormatting.Header.MiddleDivider, Settings.TableFormatting.Header.RightMiddleDivider, Settings.TableFormatting.Header.HorizontalDivider, Settings.TableFormatting.Header.DividerColor));
+            }
+
+            foreach (Row row in rows)
+            {
+                // Print the row with cell values
+                for (int i = 0; i < columnCount; i++)
+                {
+                    // If the row has fewer cells than the header, add empty cells
+                    if (i >= row.Cells.Count)
+                    {
+                        row.Cells.Add(new Cell(""));
+                    }
+
+                    Cell cell = row.Cells[i];
+                    if (string.IsNullOrWhiteSpace(cell.Text))
+                    {
+                        cell.Text = Settings.NullOrEmptyReplacement;
+                    }
+                    string cellText = GetCellString(cell, widestCellPerColumn[i]);
+                    sb.Append($"{Settings.TableFormatting.VerticalDivider}");
+                    sb.Append($"{cellText}");
+                }
+                sb.AppendLine($"{Settings.TableFormatting.VerticalDivider}");
+
+                // Print the middle divider
+                if (row != rows.Last())
+                {
+                    sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.LeftMiddleDivider, Settings.TableFormatting.MiddleDivider, Settings.TableFormatting.RightMiddleDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor));
+                }
+            }
+
+            // Print the bottom divider
+            sb.Append(HorizontalDivider(widestCellPerColumn, Settings.TableFormatting.BottomLeftDivider, Settings.TableFormatting.BottomMiddleDivider, Settings.TableFormatting.BottomRightDivider, Settings.TableFormatting.HorizontalDivider, Settings.TableFormatting.DividerColor));
+
+            return sb.ToString();
+        }
         /// <summary>
         /// Converts the table to a markdown string.
         /// </summary>
