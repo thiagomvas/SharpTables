@@ -32,12 +32,12 @@ namespace SharpTables
 		/// Gets or sets the cell's text alignment
 		/// </summary>
 		public Alignment Alignment { get; set; } = Alignment.Left;
-		private Type type;
+		private readonly Type? type;
 
 		/// <summary>
 		/// The type of the cell's value.
 		/// </summary>
-		public Type Type
+		public Type? Type
 		{
 			get { return type; }
 		}
@@ -49,9 +49,9 @@ namespace SharpTables
 		/// <param name="text">The text content of the cell.</param>
 		public Cell(object text)
 		{
-			Text = text.ToString();
+			Text = text?.ToString() ?? "";
 			Color = ConsoleColor.White;
-			type = text.GetType();
+			type = text?.GetType() ?? null;
 		}
 
 		/// <summary>
@@ -60,11 +60,11 @@ namespace SharpTables
 		/// <param name="text">The text content of the cell.</param>
 		/// <param name="color">The color of the cell.</param>
 		public Cell(object text, ConsoleColor color)
-		{
-			Text = text.ToString();
-			Color = color;
-			type = text.GetType();
-		}
+        {
+            Text = text?.ToString() ?? "null";
+            Color = color;
+            type = text?.GetType() ?? null;
+        }
 
 		public T GetValue<T>()
 		{
@@ -80,5 +80,10 @@ namespace SharpTables
 		/// Gets a value indicating whether the text content of the cell is a boolean.
 		/// </summary>
 		public bool IsBool => bool.TryParse(Text, out _);
+
+		/// <summary>
+		/// Gets a value indicating whether the cell has a null value.
+		/// </summary>
+		public bool IsNull => type is null;
 	}
 }

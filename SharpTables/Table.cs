@@ -21,7 +21,7 @@ namespace SharpTables
 		/// <summary>
 		/// Gets or sets the string used to replace null or empty string values
 		/// </summary>
-		public string EmptyReplacement = "";
+		public string EmptyReplacement = "null";
 
 		/// <summary>
 		/// Gets or sets the table formatting used. This does not include text formatting.
@@ -161,7 +161,7 @@ namespace SharpTables
 					}
 
 					Cell cell = row.Cells[i];
-					if (string.IsNullOrWhiteSpace(cell.Text))
+					if (string.IsNullOrWhiteSpace(cell.Text) || cell.IsNull)
 					{
 						cell.Text = EmptyReplacement;
 					}
