@@ -1,61 +1,78 @@
-﻿using SharpTables;
-using System.Data;
+﻿using Bogus;
+using SharpTables;
+using SharpTables.Annotations;
 
 
 Formatting tableFormatting = Formatting.ASCII with
 {
-	DividerColor = ConsoleColor.DarkGray,
-	BottomLeftDivider = '@',
-	BottomRightDivider = '@',
-	TopLeftDivider = '@',
-	TopRightDivider = '@',
-	MiddleDivider = '%',
-	Header = Formatting.ASCII.Header with { Separated = true, }
+    DividerColor = ConsoleColor.DarkGray,
+    BottomLeftDivider = '@',
+    BottomRightDivider = '@',
+    TopLeftDivider = '@',
+    TopRightDivider = '@',
+    MiddleDivider = '%',
+    Header = Formatting.ASCII.Header with { Separated = true, }
 };
 
-List<Foo> foos = new List<Foo>
+Action<Cell> cellPreset = c =>
 {
-	new Foo { A = 1, B = "Hello", C = true },
-	new Foo { A = 2, B = "World", C = false },
-	new Foo { A = 3, B = "Something", C = true },
+    if(c.Text.Length > 10)
+    {
+        c.Text = c.Text.Substring(0, 10) + "...";
+    }
 };
 
-Table table = Table.FromDataSet(foos, f => new(f.C, f.B, f.A)); // Novo overload: Passar uma lista de elementos e uma factory ou gerador de linhas usando esses elementos.
-table.Formatting = tableFormatting;
+var faker = new Faker<Order>()
+    .RuleFor(o => o.Id, f => f.Random.Guid())
+    .RuleFor(o => o.Item, f => f.Commerce.ProductName())
+    .RuleFor(o => o.Quantity, f => f.Random.Number(1, 10))
+    .RuleFor(o => o.Price, f => f.Random.Double(1, 100));
 
-table.UsePreset(c =>
+var dataset = faker.Generate(100);
+foreach (var item in dataset)
 {
-	if (c.IsBool)
-	{
-		bool b = c.GetValue<bool>();
-		c.Text = b ? "V" : "X";
-		c.Alignment = Alignment.Center;
-		c.Color = b ? ConsoleColor.Green : ConsoleColor.Red;
-	}
-	if (c.IsNumeric)
-	{
-		c.Color = ConsoleColor.Yellow;
-		c.Padding = 0;
-		c.Alignment = Alignment.Right;
-	}
-});
-table.EmptyReplacement = "N/A";
-
-table.SetHeader(new Row("Is Active", "Name", "ID")); // Define uma row como header ao inves de usar a primeira linha do dataset.
-table.AddDataSet(foos, f => new(f.C, f.B, f.A)); // Adiciona um dataset ao inves de substituir o existente.
-foreach(var cell in table.Header.Cells)
-{
-	cell.Alignment = Alignment.Center;
-	cell.Padding = 2;
-	cell.Color = ConsoleColor.Cyan;
+    item.Price = Math.Round(item.Price, 2);
 }
 
-table.Print();
+var pages = Table.FromDataSet(dataset)
+    .UseFormatting(tableFormatting)
+    .UseNullOrEmptyReplacement("NULL")
+    .UsePreset(cellPreset)
+    .DisplayRowCount()
+    .DisplayRowIndexes()
+    .ToPaginatedTable(10);
 
-class Foo
+while(true)
 {
-	public int A;
-	public string B;
-	public bool C;
+    Console.Clear();
+    pages.PrintCurrentPage();
+    Console.WriteLine("[<-] Previous Page | [->] Next Page");
+
+    var key = Console.ReadKey().Key;
+    if (key == ConsoleKey.LeftArrow)
+    {
+        pages.PreviousPage();
+    }
+    else if (key == ConsoleKey.RightArrow)
+    {
+        pages.NextPage();
+    }
+    else
+    {
+        break;
+    }
 }
 
+class Order
+{
+    [TableDisplayName("Order ID")]
+    public Guid Id { get; set; }
+    public string Item { get; set; }
+
+    [TableAlignment(Alignment.Center)]
+    [TableColor(ConsoleColor.Yellow)]
+    public int Quantity { get; set; }
+
+    [TableColor(ConsoleColor.Green)]
+    public double Price { get; set; }
+}

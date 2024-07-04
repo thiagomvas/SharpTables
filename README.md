@@ -2,29 +2,28 @@
 A versatile and customizable console table formatter. Generate tables ready to be written to console with the ability to customize even the characters used by the generator to generate the table.
 
 ## Example usage
+For example programs, see the [Examples](
 ### Basic table
 ```cs
+using SharpTables;
+
 Formatting f = Formatting.Minimalist;
 
 object[,] dataset = new object[,]
 {
-	{ "Name", "Age", "City" },
-	{ "John Doe", 42, "New York" },
-	{ "Jane Doe", 36, "Chicago" },
-	{ "Joe Bloggs", 25, "Los Angeles" },
-	{ "Jenny Smith", 28, "Miami" }
+    { "Name", "Age", "City" },
+    { "John Doe", 42, "New York" },
+    { "Jane Doe", 36, "Chicago" },
+    { "Joe Bloggs", 25, "Los Angeles" },
+    { "Jenny Smith", 28, "Miami" }
 };
 
-Table table = Table.FromDataSet(dataset, f); // Also supports IEnumerable<IEnumerable<T>>
+Table table = Table.FromDataSet(dataset) // Also supports IEnumerable<IEnumerable<T>>
+    .AddRow(new Row("Jimmy Jones", null, "Las Vegas")) // Supports nullables and manually adding rows
+    .UseNullOrEmptyReplacement("N/A")
+    .UsePreset(cell => cell.Color = cell.IsNumeric ? ConsoleColor.Yellow : ConsoleColor.White);
 
-// You may also add rows manually!
-table.AddRow(new Row(["Jimmy Jones", null, "Las Vegas"])); // Supports nullables
-
-table.SetColumnColor(1, ConsoleColor.Yellow);
-table.EmptyReplacement = "N/A"; // Replacement for null or empty strings
-table.SetColumnPadding(1, 5, true);
 table.Print();
-Console.WriteLine();
 
 /*
  Name             Age      City
