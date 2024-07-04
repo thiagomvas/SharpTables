@@ -47,7 +47,9 @@ Foo[] otherFoos = new Foo[]
 
 Table.FromDataSet(foos)
 	.UseFormatting(tableFormatting)
+    .UseNullOrEmptyReplacement("NULL")
     .Print();
+
 
 class Foo
 {

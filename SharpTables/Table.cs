@@ -91,6 +91,17 @@ namespace SharpTables
             Formatting = formatting;
             return this;
         }
+
+        /// <summary>
+        /// Defines a replacement string for null or empty string values in the cells.
+        /// </summary>
+        /// <param name="replacement">The replacement string</param>
+        /// <returns>The table with changes applied</returns>
+        public Table UseNullOrEmptyReplacement(string replacement)
+		{
+            EmptyReplacement = replacement;
+            return this;
+        }
 		/// <summary>
 		/// Prints the table to the console.
 		/// </summary>
@@ -389,8 +400,16 @@ namespace SharpTables
 		/// <returns>The markdown representation of this table</returns>
 		/// <remarks>Styling and custom table formatting not included. If the custom formatting is needed, use <see cref="ToString()"/></remarks>
 		public string ToMarkdown()
-		{
-			StringBuilder sb = new();
+        {
+            foreach (var row in rows)
+            {
+                foreach (var cell in row.Cells)
+                {
+                    if (cell.IsNull)
+                        cell.Text = EmptyReplacement;
+                }
+            }
+            StringBuilder sb = new();
 			// Header
 			sb.Append("|");
 			foreach(var cell in Header.Cells)
@@ -421,6 +440,14 @@ namespace SharpTables
 		/// <remarks>Styling and custom table formatting not included. If the custom formatting is needed, use <see cref="ToString()"/></remarks>
 		public string ToHtml(bool singleLine = false)
 		{
+			foreach(var row in rows)
+			{
+                foreach (var cell in row.Cells)
+				{
+					if(cell.IsNull)
+						cell.Text = EmptyReplacement;
+                }
+            }
 			StringBuilder sb = new();
 			sb.AppendLine("<table>");
 			sb.AppendLine("<thead>");
