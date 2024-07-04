@@ -1,4 +1,5 @@
 ﻿using SharpTables;
+using SharpTables.Annotations;
 using System.Data;
 
 
@@ -45,15 +46,27 @@ Foo[] otherFoos = new Foo[]
 };
 
 Table.FromDataSet(foos)
-    .AddDataSet(otherFoos)
 	.UseFormatting(tableFormatting)
-	.UsePreset(cellPreset)
     .Print();
 
 class Foo
 {
+    [TableOrder(1)]
+    [TableColor(ConsoleColor.Red)]
+    [TableAlignment(Alignment.Right)]
+    [TableDisplayName("Some Int")]
 	public int A { get; set; }
-	public string B { get; set; }
+
+    [TableDisplayName("Some String")]
+    [TableColor(ConsoleColor.Cyan)]
+    [TableAlignment(Alignment.Right)]
+    public string B { get; set; }
+
+    [TableOrder(0)]
     public bool C { get; set; }
+    private double D { get; set; } = 1.234;
+    public string E = "Field!";
+    public static string F = "Static!";
+    public static string G { get; set; } = "Static PROP!";
 }
 

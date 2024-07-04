@@ -309,12 +309,19 @@ namespace SharpTables
 			return result;
 		}
 
+		/// <summary>
+		/// Creates a table from a collection using the properties of the type.
+		/// </summary>
+		/// <typeparam name="T">The data type</typeparam>
+		/// <param name="data">The data set</param>
+		/// <returns>A table containing all the property values of the dataset</returns>
+		/// <remarks>
+		/// Only public instance properties without a <see cref="TableIgnoreAttribute"/> will be added to the table.
+		/// </remarks>
 		public static Table FromDataSet<T>(IEnumerable<T> data)
 		{
-			PropertyInfo[] properties = typeof(T).GetProperties().Where(p => p.GetCustomAttribute<TableIgnoreAttribute>() is null).ToArray();
+			PropertyInfo[] properties = TableHelper.GetProperties(typeof(T));
 			Table table = new Table();
-
-			properties = properties.OrderBy(p => TableHelper.GetOrder(p)).ToArray();
 
 			string[] headerTitles = new string[properties.Length];
 			// Check for DisplayName annotation
@@ -361,7 +368,16 @@ namespace SharpTables
             return this;
         }
 
-		public Table AddDataSet<T>(IEnumerable<T> data)
+        /// <summary>
+        /// Adds a collection of data to the table using the properties of the type.
+        /// </summary>
+        /// <typeparam name="T">The data type</typeparam>
+        /// <param name="data">The data set</param>
+        /// <returns>A table containing all the property values of the dataset</returns>
+        /// <remarks>
+        /// Only public instance properties without a <see cref="TableIgnoreAttribute"/> will be added to the table.
+        /// </remarks>
+        public Table AddDataSet<T>(IEnumerable<T> data)
 		{
 			TableHelper.AddTDataset(this, data);
 			return this;

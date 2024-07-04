@@ -1,5 +1,8 @@
 ﻿namespace SharpTables.Annotations
 {
+    /// <summary>
+    /// Indicates that the column should be displayed with the specified color in the table.
+    /// </summary>
     [System.AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class TableColorAttribute : Attribute
     {

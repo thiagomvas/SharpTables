@@ -1,11 +1,17 @@
 ﻿using SharpTables.Annotations;
 using System.Reflection;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpTables
 {
     internal static class TableHelper
     {
+        public static PropertyInfo[] GetProperties(Type type)
+        {
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttribute<TableIgnoreAttribute>() is null)
+                .OrderBy(p => GetOrder(p))
+                .ToArray();
+        }
         // Order by whether or not the TableOrderAttribute is present
         public static int GetOrder(PropertyInfo property)
         {
@@ -15,8 +21,7 @@ namespace SharpTables
 
         public static void AddTDataset<T>(Table target, IEnumerable<T> data)
         {
-            PropertyInfo[] properties = typeof(T).GetProperties().Where(p => p.GetCustomAttribute<TableIgnoreAttribute>() is null).ToArray();
-            properties = properties.OrderBy(p => TableHelper.GetOrder(p)).ToArray();
+            PropertyInfo[] properties = GetProperties(typeof(T));
 
             // Add the data to the table
             foreach (T item in data)
