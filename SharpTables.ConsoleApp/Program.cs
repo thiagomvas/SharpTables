@@ -16,23 +16,9 @@ Formatting tableFormatting = Formatting.ASCII with
 
 Action<Cell> cellPreset = c =>
 {
-    if (c.IsBool)
+    if(c.Text.Length > 10)
     {
-        bool b = c.GetValue<bool>();
-        c.Text = b ? "V" : "X";
-        c.Alignment = Alignment.Center;
-        c.Color = b ? ConsoleColor.Green : ConsoleColor.Red;
-    }
-    if (c.IsNumeric)
-    {
-        c.Color = ConsoleColor.Yellow;
-        c.Padding = 0;
-        c.Alignment = Alignment.Right;
-    }
-    if (c.IsNull)
-    {
-        c.Alignment = Alignment.Center;
-        c.Color = ConsoleColor.Blue;
+        c.Text = c.Text.Substring(0, 10) + "...";
     }
 };
 
@@ -52,10 +38,11 @@ var pages = Table.FromDataSet(dataset)
     .UseFormatting(tableFormatting)
     .UseNullOrEmptyReplacement("NULL")
     .UsePreset(cellPreset)
+    .DisplayRowCount()
     .DisplayRowIndexes()
     .ToPaginatedTable(10);
 
-while (true)
+while(true)
 {
     Console.Clear();
     pages.PrintCurrentPage();
@@ -76,11 +63,16 @@ while (true)
     }
 }
 
-
 class Order
 {
+    [TableDisplayName("Order ID")]
     public Guid Id { get; set; }
     public string Item { get; set; }
+
+    [TableAlignment(Alignment.Center)]
+    [TableColor(ConsoleColor.Yellow)]
     public int Quantity { get; set; }
+
+    [TableColor(ConsoleColor.Green)]
     public double Price { get; set; }
 }

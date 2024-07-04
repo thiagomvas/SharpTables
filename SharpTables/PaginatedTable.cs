@@ -11,7 +11,7 @@ namespace SharpTables
         /// <summary>
         /// Gets the current page number. Will never go out of bounds.
         /// </summary>
-        public int CurrentPage
+        public int CurrentPageIndex
         {
             get => _currentPage;
             private set
@@ -29,6 +29,11 @@ namespace SharpTables
         /// Gets the total number of pages.
         /// </summary>
         public int TotalPages => Pages.Count;
+
+        /// <summary>
+        /// Gets the current page's table.
+        /// </summary>
+        public Table Current => Pages[CurrentPageIndex];
 
         /// <summary>
         /// Gets or sets the pages.
@@ -64,7 +69,7 @@ namespace SharpTables
         /// </summary>
         public void PrintCurrentPage()
         {
-            PrintPage(CurrentPage);
+            PrintPage(CurrentPageIndex);
         }
 
         /// <summary>
@@ -72,9 +77,9 @@ namespace SharpTables
         /// </summary>
         public void NextPage()
         {
-            if (CurrentPage < TotalPages - 1)
+            if (CurrentPageIndex < TotalPages - 1)
             {
-                CurrentPage++;
+                CurrentPageIndex++;
                 PrintCurrentPage();
             }
         }
@@ -84,9 +89,9 @@ namespace SharpTables
         /// </summary>
         public void PreviousPage()
         {
-            if (CurrentPage >= 1)
+            if (CurrentPageIndex >= 1)
             {
-                CurrentPage--;
+                CurrentPageIndex--;
                 PrintCurrentPage();
             }
         }
