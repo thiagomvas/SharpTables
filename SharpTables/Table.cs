@@ -16,7 +16,7 @@ namespace SharpTables
 		/// <summary>
 		/// Gets or sets the rows of the table
 		/// </summary>
-		private List<Row> rows { get; set; }
+		public List<Row> Rows { get; set; }
 
 		/// <summary>
 		/// Gets or sets the string used to replace null or empty string values
@@ -33,7 +33,7 @@ namespace SharpTables
 		/// </summary>
 		public Table()
 		{
-			rows = new List<Row>();
+			Rows = new List<Row>();
 			Formatting = new Formatting();
 		}
 
@@ -48,12 +48,12 @@ namespace SharpTables
 			{
 				Header = row;
 			}
-			row.LineIndex = rows.Count;
+			row.LineIndex = Rows.Count;
 			for (int i = 0; i < row.Cells.Count; i++)
 			{
 				row.Cells[i].Position = new Vector2(i, row.LineIndex);
 			}
-			rows.Add(row);
+			Rows.Add(row);
 			return this;
 		}
 
@@ -107,7 +107,7 @@ namespace SharpTables
 		/// </summary>
 		public void Print()
 		{
-			foreach(var row in rows)
+			foreach(var row in Rows)
 			{
 				foreach(var cell in row.Cells)
 				{
@@ -115,7 +115,7 @@ namespace SharpTables
 				}
 			}
 			// Setup
-			var temp = rows.ToList();
+			var temp = Rows.ToList();
 			temp.Add(Header);
 			int[] widestCellPerColumn = new int[temp.Max(r => r.Cells.Count)];
 			int columnCount = temp[0].Cells.Count;
@@ -160,7 +160,7 @@ namespace SharpTables
 				PrintHorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor);
 			}
 
-			foreach (Row row in rows)
+			foreach (Row row in Rows)
 			{
 				// Print the row with cell values
 				for (int i = 0; i < columnCount; i++)
@@ -188,7 +188,7 @@ namespace SharpTables
 				Console.ResetColor();
 
 				// Print the middle divider
-				if (row != rows.Last())
+				if (row != Rows.Last())
 				{
 					PrintHorizontalDivider(widestCellPerColumn, Formatting.LeftMiddleDivider, Formatting.MiddleDivider, Formatting.RightMiddleDivider, Formatting.HorizontalDivider, Formatting.DividerColor);
 				}
@@ -206,7 +206,7 @@ namespace SharpTables
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
-			var temp = rows.ToList();
+			var temp = Rows.ToList();
 			temp.Add(Header);
 			// Setup
 			int[] widestCellPerColumn = new int[temp.Max(r => r.Cells.Count)];
@@ -247,7 +247,7 @@ namespace SharpTables
 				sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.Header.LeftMiddleDivider, Formatting.Header.MiddleDivider, Formatting.Header.RightMiddleDivider, Formatting.Header.HorizontalDivider, Formatting.Header.DividerColor));
 			}
 
-			foreach (Row row in rows)
+			foreach (Row row in Rows)
 			{
 				// Print the row with cell values
 				for (int i = 0; i < columnCount; i++)
@@ -270,7 +270,7 @@ namespace SharpTables
 				sb.AppendLine($"{Formatting.VerticalDivider}");
 
 				// Print the middle divider
-				if (row != rows.Last())
+				if (row != Rows.Last())
 				{
 					sb.Append(HorizontalDivider(widestCellPerColumn, Formatting.LeftMiddleDivider, Formatting.MiddleDivider, Formatting.RightMiddleDivider, Formatting.HorizontalDivider, Formatting.DividerColor));
 				}
@@ -401,7 +401,7 @@ namespace SharpTables
 		/// <remarks>Styling and custom table formatting not included. If the custom formatting is needed, use <see cref="ToString()"/></remarks>
 		public string ToMarkdown()
         {
-            foreach (var row in rows)
+            foreach (var row in Rows)
             {
                 foreach (var cell in row.Cells)
                 {
@@ -421,7 +421,7 @@ namespace SharpTables
 			sb.AppendLine();
 
 			// Rows
-			foreach (var row in rows)
+			foreach (var row in Rows)
 			{
 				sb.Append("| ");
 				foreach (var cell in row.Cells)
@@ -440,7 +440,7 @@ namespace SharpTables
 		/// <remarks>Styling and custom table formatting not included. If the custom formatting is needed, use <see cref="ToString()"/></remarks>
 		public string ToHtml(bool singleLine = false)
 		{
-			foreach(var row in rows)
+			foreach(var row in Rows)
 			{
                 foreach (var cell in row.Cells)
 				{
@@ -457,7 +457,7 @@ namespace SharpTables
 			sb.AppendLine("</tr>");
 			sb.AppendLine("</thead>");
 			sb.AppendLine("<tbody>");
-			foreach (var row in rows)
+			foreach (var row in Rows)
 			{
 				sb.AppendLine("<tr>");
 				foreach (var cell in row.Cells)
