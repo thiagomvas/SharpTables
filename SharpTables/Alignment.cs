@@ -1,9 +1,9 @@
 ﻿namespace SharpTables
 {
-	public enum Alignment
-	{
-		Left,
-		Center,
-		Right
-	}
+    public enum Alignment
+    {
+        Left,
+        Center,
+        Right
+    }
 }

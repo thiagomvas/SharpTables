@@ -1,17 +1,16 @@
 ﻿using SharpTables;
 using SharpTables.Annotations;
-using System.Data;
 
 
 Formatting tableFormatting = Formatting.ASCII with
 {
-	DividerColor = ConsoleColor.DarkGray,
-	BottomLeftDivider = '@',
-	BottomRightDivider = '@',
-	TopLeftDivider = '@',
-	TopRightDivider = '@',
-	MiddleDivider = '%',
-	Header = Formatting.ASCII.Header with { Separated = true, }
+    DividerColor = ConsoleColor.DarkGray,
+    BottomLeftDivider = '@',
+    BottomRightDivider = '@',
+    TopLeftDivider = '@',
+    TopRightDivider = '@',
+    MiddleDivider = '%',
+    Header = Formatting.ASCII.Header with { Separated = true, }
 };
 
 Action<Cell> cellPreset = c =>
@@ -29,26 +28,38 @@ Action<Cell> cellPreset = c =>
         c.Padding = 0;
         c.Alignment = Alignment.Right;
     }
+    if (c.IsNull)
+    {
+        c.Alignment = Alignment.Center;
+        c.Color = ConsoleColor.Blue;
+    }
 };
 
 List<Foo> foos = new List<Foo>
 {
-	new Foo { A = 1, B = "Hello", C = null },
-	new Foo { A = 2, B = "World", C = false },
-	new Foo { A = 3, B = "Something", C = true },
+    new Foo { A = 1, B = "Hello", C = null },
+    new Foo { A = 2, B = "World", C = false },
+    new Foo { A = 3, B = "Something", C = true },
 };
 
 Foo[] otherFoos = new Foo[]
 {
     new Foo { A = 4, B = "Bye", C = true },
     new Foo { A = null, B = "World", C = false },
-    new Foo { A = 6, B = null}
+    new Foo { A = 6, B = null, C = false}
 };
 
-Table.FromDataSet(foos)
-	.UseFormatting(tableFormatting)
+var t = Table.FromDataSet(foos)
+    .UseFormatting(tableFormatting)
+    .AddDataSet(otherFoos)
     .UseNullOrEmptyReplacement("NULL")
-    .Print();
+    .UsePreset(cellPreset)
+    .DisplayRowCount()
+    .DisplayRowIndexes();
+t.Print();
+string str = t.ToString();
+Console.WriteLine(str);
+
 
 
 class Foo
@@ -57,7 +68,7 @@ class Foo
     [TableColor(ConsoleColor.Red)]
     [TableAlignment(Alignment.Right)]
     [TableDisplayName("Some Int")]
-	public int? A { get; set; }
+    public int? A { get; set; }
 
     [TableDisplayName("Some String")]
     [TableColor(ConsoleColor.Cyan)]
