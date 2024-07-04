@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using SharpTables.Annotations;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 
@@ -278,15 +279,7 @@ namespace SharpTables
 		public static Table FromDataSet(object[,] data)
 		{
 			Table table = new Table();
-			for (int i = 0; i < data.GetLength(0); i++)
-			{
-				object[] row = new object[data.GetLength(1)];
-				for (int j = 0; j < data.GetLength(1); j++)
-				{
-					row[j] = data[i, j];
-				}
-				table.AddRow(new Row(row));
-			}
+			TableHelper.AddDataSet(table, data);
 			return table;
 		}
 
@@ -298,10 +291,7 @@ namespace SharpTables
 		public static Table FromDataSet(IEnumerable<IEnumerable<object>> data)
 		{
 			Table table = new Table();
-			foreach (IEnumerable<object> row in data)
-			{
-				table.AddRow(new Row(row));
-			}
+			TableHelper.AddDataSet(table, data);
 			return table;
 		}
 
@@ -315,30 +305,29 @@ namespace SharpTables
 		public static Table FromDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc)
 		{
 			Table result = new();
-			foreach (T item in data)
-			{
-				Row row = generatorFunc(item);
-				result.AddRow(row);
-			}
+			TableHelper.AddDataSet(result, data, generatorFunc);
 			return result;
 		}
 
 		public static Table FromDataSet<T>(IEnumerable<T> data)
 		{
-			PropertyInfo[] properties = typeof(T).GetProperties();
+			PropertyInfo[] properties = typeof(T).GetProperties().Where(p => p.GetCustomAttribute<TableIgnoreAttribute>() is null).ToArray();
 			Table table = new Table();
-			table.SetHeader(new Row(properties.Select(p => p.Name)));
 
-			// Add the data to the table
-			foreach (T item in data)
+			properties = properties.OrderBy(p => TableHelper.GetOrder(p)).ToArray();
+
+			string[] headerTitles = new string[properties.Length];
+			// Check for DisplayName annotation
+			for(int i = 0; i < properties.Length; i++)
 			{
-				object[] rowData = new object[properties.Length];
-                for (int i = 0; i < properties.Length; i++)
-				{
-					rowData[i] = properties[i].GetValue(item);
-                }
-                table.AddRow(new Row(rowData));
+                TableDisplayNameAttribute? attribute = properties[i].GetCustomAttribute<TableDisplayNameAttribute>();
+				headerTitles[i] = attribute?.Name ?? properties[i].Name;
             }
+
+			table.SetHeader(new Row(headerTitles));
+
+			TableHelper.AddTDataset(table, data);
+
 			return table;
 		}
 
@@ -348,16 +337,7 @@ namespace SharpTables
 		/// <param name="data">The data to be added</param>
 		public Table AddDataSet(object[,] data)
 		{
-			for (int i = 0; i < data.GetLength(0); i++)
-			{
-				object[] row = new object[data.GetLength(1)];
-				for (int j = 0; j < data.GetLength(1); j++)
-				{
-					row[j] = data[i, j];
-				}
-				AddRow(new Row(row));
-			}
-
+			TableHelper.AddDataSet(this, data);
             return this;
         }
 		/// <summary>
@@ -366,11 +346,7 @@ namespace SharpTables
 		/// <param name="data">The data to be added</param>
 		public Table AddDataSet(IEnumerable<IEnumerable<object>> data)
 		{
-			foreach (IEnumerable<object> row in data)
-			{
-				AddRow(new Row(row));
-			}
-
+			TableHelper.AddDataSet(this, data);
             return this;
         }
 		/// <summary>
@@ -381,29 +357,13 @@ namespace SharpTables
 		/// <param name="generatorFunc">The function used to generate rows</param>
 		public Table AddDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc)
 		{
-			foreach (T item in data)
-			{
-				Row row = generatorFunc(item);
-				AddRow(row);
-            }
+			TableHelper.AddDataSet(this, data, generatorFunc);
             return this;
         }
 
 		public Table AddDataSet<T>(IEnumerable<T> data)
 		{
-			PropertyInfo[] properties = typeof(T).GetProperties();
-            SetHeader(new Row(properties.Select(p => p.Name)));
-
-            // Add the data to the table
-            foreach (T item in data)
-			{
-				object[] rowData = new object[properties.Length];
-                for (int i = 0; i < properties.Length; i++)
-				{
-					rowData[i] = properties[i].GetValue(item);
-                }
-                AddRow(new Row(rowData));
-            }
+			TableHelper.AddTDataset(this, data);
 			return this;
         }
 
