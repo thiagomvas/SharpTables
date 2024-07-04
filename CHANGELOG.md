@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.0"></a>
+## [1.2.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.2.0) (2024-07-04)
+
+### Features
+
+* Add PaginatedTable to allow table pagination ([840739c](https://www.github.com/thiagomvas/SharpTables/commit/840739c37e7e7fa3c1ecdda3769b8954ac84d130))
+* Add Row Count and Row Indexes ([6221f92](https://www.github.com/thiagomvas/SharpTables/commit/6221f9244fc5916bfda55f14d76a6b1f970ebf4e))
+* Add TableAlignmentAttribute ([c4dd839](https://www.github.com/thiagomvas/SharpTables/commit/c4dd839dad8f24f19d742249c8014ec0db9fca14))
+* Add TableColorAttribute ([02e18fb](https://www.github.com/thiagomvas/SharpTables/commit/02e18fb8e6600107a94020f5924108e2a8cf4c94))
+* Add TableDisplayNameAttribute to set a property display name on table. ([363da57](https://www.github.com/thiagomvas/SharpTables/commit/363da576943970c279a267f56aa79009e8c92cfc))
+* Add TableIgnoreAttribute ([70d75af](https://www.github.com/thiagomvas/SharpTables/commit/70d75af0846c379fd17a588419c97bb35886dfee))
+* Cells now have null value support. Cell.IsNull informs of a null value. ([576479e](https://www.github.com/thiagomvas/SharpTables/commit/576479ebaf100016ae5851c3e5816b6602cfe3ac))
+* Methods that modify the table now return said tables reference ([77926e5](https://www.github.com/thiagomvas/SharpTables/commit/77926e5146cb0495e6d602cb7807cc5f87aec07c))
+* Migrate Table settings to its own class ([b503094](https://www.github.com/thiagomvas/SharpTables/commit/b50309488321251b76e4ff78d9535b06bc5119c8))
+* New Add/From DataSet methods using reflection to add all props to a table ([e4c2b6d](https://www.github.com/thiagomvas/SharpTables/commit/e4c2b6d87590329dd7b10592a00a33400c33155c))
+
+### Bug Fixes
+
+* ToMarkdown and ToHtml wouldn't replace null or empty values ([87a1901](https://www.github.com/thiagomvas/SharpTables/commit/87a190191319de3bac0f75b2c3ed90210c507193))
+
 <a name="1.1.0"></a>
 ## [1.1.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.1.0) (2024-06-29)
 
