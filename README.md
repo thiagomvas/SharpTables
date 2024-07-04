@@ -2,7 +2,7 @@
 A versatile and customizable console table formatter. Generate tables ready to be written to console with the ability to customize even the characters used by the generator to generate the table.
 
 ## Example usage
-For an example program, see [Example](https://github.com/thiagomvas/SharpTables/blob/master/SharpTables.Examples/Program.cs)
+For an example program, see [Example](https://github.com/thiagomvas/SharpTables/blob/master/SharpTables.Examples/Program.cs). Do keep in mind not all of the functionality is included in it.
 ### Basic table
 ```cs
 using SharpTables;
