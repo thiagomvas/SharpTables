@@ -11,6 +11,8 @@ var orders = new Faker<Order>()
     .RuleFor(o => o.Producer, f => f.Company.CompanyName().OrNull(f, 0.1f)) // Generate a few nullables
     .Generate(100);
 
+orders.ForEach(o => o.Price = Math.Round(o.Price, 2)); // Rounding the prices to 2 decimal places
+
 // Creating a formatting object from a template
 var tableFormatting = Formatting.ASCII with
 {
@@ -27,13 +29,17 @@ var tableFormatting = Formatting.ASCII with
 Action<Cell> cellPreset = c =>
 {
     // Checking for cell type
-    if (c.Type == typeof(Guid) && c.Text.Length > 10)
+    if (c.Type == typeof(Guid))
     {
-        c.Text = c.Text.Substring(0, 10) + "...";
+        c.Text = c.Text.Substring(0, 8) + "...";
     }
     else if (c.IsNull)
     {
         c.Color = ConsoleColor.Blue;
+    }
+    else if(c.IsNumeric)
+    {
+        c.Alignment = Alignment.Center;
     }
 };
 
@@ -42,13 +48,16 @@ Row customHeader = new Row("This", "is", "a custom", "header", "cool right?");
 customHeader.Cells.ForEach(c => c.Color = ConsoleColor.DarkGreen); // Setting the color of the header cells
 
 // Creating a table from the data
-PaginatedTable paginatedTable = Table.FromDataSet(orders) // This overload will generate a table based on the properties. Header is automatically generated
-    .UseFormatting(tableFormatting)   // Applying the formatting
-    //.SetHeader(customHeader)          // Setting a custom header. 
-    .UsePreset(cellPreset)            // Applying the cell preset
-    .DisplayRowIndexes()              // Displaying row indexes
-    .UseNullOrEmptyReplacement("N/A") // Replacing null values or empty strings with N/A
-    .ToPaginatedTable(10);            // Creating a paginated table with 10 rows per page
+Table table = Table.FromDataSet(orders)                // This overload will generate a table based on the properties. Header is automatically generated
+    .UseFormatting(tableFormatting)                    // Applying the formatting
+  //.SetHeader(customHeader)                           // Setting a custom header. 
+    .UsePreset(cellPreset)                             // Applying the cell preset
+    .DisplayRowIndexes()                               // Displaying row indexes
+    .UseRowIndexColor(ConsoleColor.DarkBlue)           // Setting the row index color
+    .UseNullOrEmptyReplacement("N/A");                 // Replacing null values or empty strings with N/A
+
+
+PaginatedTable paginatedTable = table.ToPaginatedTable(10); // Creating a paginated table with 10 rows per page
 
 // Displaying the table with controls
 while (true)
@@ -56,7 +65,7 @@ while (true)
     Console.Clear();
     paginatedTable.PrintCurrentPage();
     Console.WriteLine($"Page {paginatedTable.CurrentPageIndex + 1} of {paginatedTable.TotalPages}");
-    Console.WriteLine("[<-] Previous Page | [->] Next Page | [S] Write as string | [H] Write as HTML | [M] Write as Markdown | [ESC] Exit");
+    Console.WriteLine("[<-] Previous Page | [->] Next Page | [S] Write as string | [H] Write as HTML | [M] Write as Markdown | [F] Print full table | [ESC] Exit");
 
 
     var key = Console.ReadKey().Key;
@@ -85,6 +94,12 @@ while (true)
         case ConsoleKey.M:
             Console.Clear();
             Console.WriteLine(paginatedTable.Current.ToMarkdown()); // Writes the table as Markdown
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            break;
+        case ConsoleKey.F:
+            Console.Clear();
+            table.Print(); // Prints the original table, before pagination
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             break;
