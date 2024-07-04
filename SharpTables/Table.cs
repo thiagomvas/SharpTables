@@ -35,11 +35,12 @@ namespace SharpTables
 			Formatting = new Formatting();
 		}
 
-		/// <summary>
-		/// Adds a row to the table.
-		/// </summary>
-		/// <param name="row">The row to add.</param>
-		public void AddRow(Row row)
+        /// <summary>
+        /// Adds a row to the table.
+        /// </summary>
+        /// <param name="row">The row to add.</param>
+        /// <returns>The table with changes applied</returns>
+        public Table AddRow(Row row)
 		{
 			if(Header == null)
 			{
@@ -51,27 +52,43 @@ namespace SharpTables
 				row.Cells[i].Position = new Vector2(i, row.LineIndex);
 			}
 			rows.Add(row);
+			return this;
 		}
 
-		/// <summary>
-		/// Sets the header of the table. 
-		/// </summary>
-		/// <param name="row">The row to add</param>
-		public void SetHeader(Row row)
+        /// <summary>
+        /// Sets the header of the table. 
+        /// </summary>
+        /// <param name="row">The row to add</param>
+        /// <returns>The table with changes applied</returns>
+        public Table SetHeader(Row row)
 		{
 			Header = row;
 			foreach (var cell in row.Cells)
 				cell.Padding = 0;
+			return this;
+		}
+
+        /// <summary>
+        /// Applies a preset action to every cell in the table. 
+        /// </summary>
+        /// <param name="presetter"></param>
+        /// <returns>The table with changes applied</returns>
+        public Table UsePreset(Action<Cell> presetter)
+		{
+			this.presetter = presetter;
+			return this;
 		}
 
 		/// <summary>
-		/// Applies a preset action to every cell in the table. 
+		/// Applies formatting settings to the table.
 		/// </summary>
-		/// <param name="presetter"></param>
-		public void UsePreset(Action<Cell> presetter)
+		/// <param name="formatting">The formatting settings</param>
+		/// <returns>The table with changes applied</returns>
+		public Table UseFormatting(Formatting formatting)
 		{
-			this.presetter = presetter;
-		}
+            Formatting = formatting;
+            return this;
+        }
 		/// <summary>
 		/// Prints the table to the console.
 		/// </summary>
