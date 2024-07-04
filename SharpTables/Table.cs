@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Reflection;
 using System.Text;
 
 namespace SharpTables
@@ -322,11 +323,30 @@ namespace SharpTables
 			return result;
 		}
 
+		public static Table FromDataSet<T>(IEnumerable<T> data)
+		{
+			PropertyInfo[] properties = typeof(T).GetProperties();
+			Table table = new Table();
+			table.SetHeader(new Row(properties.Select(p => p.Name)));
+
+			// Add the data to the table
+			foreach (T item in data)
+			{
+				object[] rowData = new object[properties.Length];
+                for (int i = 0; i < properties.Length; i++)
+				{
+					rowData[i] = properties[i].GetValue(item);
+                }
+                table.AddRow(new Row(rowData));
+            }
+			return table;
+		}
+
 		/// <summary>
 		/// Adds a two-dimensional array of data to the table.
 		/// </summary>
 		/// <param name="data">The data to be added</param>
-		public void AddDataSet(object[,] data)
+		public Table AddDataSet(object[,] data)
 		{
 			for (int i = 0; i < data.GetLength(0); i++)
 			{
@@ -337,32 +357,55 @@ namespace SharpTables
 				}
 				AddRow(new Row(row));
 			}
-		}
+
+            return this;
+        }
 		/// <summary>
 		/// Adds a collection of data to the table.
 		/// </summary>
 		/// <param name="data">The data to be added</param>
-		public void AddDataSet(IEnumerable<IEnumerable<object>> data)
+		public Table AddDataSet(IEnumerable<IEnumerable<object>> data)
 		{
 			foreach (IEnumerable<object> row in data)
 			{
 				AddRow(new Row(row));
 			}
-		}
+
+            return this;
+        }
 		/// <summary>
 		/// Adds a collection of data to the table with a function to produce rows based on each item.
 		/// </summary>
 		/// <typeparam name="T">The type of item being added.</typeparam>
 		/// <param name="data">The dataset</param>
 		/// <param name="generatorFunc">The function used to generate rows</param>
-		public void AddDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc)
+		public Table AddDataSet<T>(IEnumerable<T> data, Func<T, Row> generatorFunc)
 		{
 			foreach (T item in data)
 			{
 				Row row = generatorFunc(item);
 				AddRow(row);
-			}
-		}
+            }
+            return this;
+        }
+
+		public Table AddDataSet<T>(IEnumerable<T> data)
+		{
+			PropertyInfo[] properties = typeof(T).GetProperties();
+            SetHeader(new Row(properties.Select(p => p.Name)));
+
+            // Add the data to the table
+            foreach (T item in data)
+			{
+				object[] rowData = new object[properties.Length];
+                for (int i = 0; i < properties.Length; i++)
+				{
+					rowData[i] = properties[i].GetValue(item);
+                }
+                AddRow(new Row(rowData));
+            }
+			return this;
+        }
 
 		/// <summary>
 		/// Converts the table to a markdown string.
