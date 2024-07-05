@@ -77,6 +77,7 @@ namespace SharpTables
             cell.Padding = Padding;
             cell.Alignment = Alignment;
             cell.type = type;
+            cell.Position = Position;
             return cell;
         }
 
