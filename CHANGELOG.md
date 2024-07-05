@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.1"></a>
+## [1.2.1](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.2.1) (2024-07-05)
+
+### Bug Fixes
+
+* Cell.Position now is cloned properly ([4970ea8](https://www.github.com/thiagomvas/SharpTables/commit/4970ea8bd65c975afaa04baa3a8f991a457351c9))
+
 <a name="1.2.0"></a>
 ## [1.2.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.2.0) (2024-07-04)
 
