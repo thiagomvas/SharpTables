@@ -11,7 +11,7 @@ namespace SharpTables.Graph
 
 
         private int yTickSpacing = 1;
-        private int xTickSpacing = 3;
+        private int xTickSpacing = 1;
         private int numOfYTicks = 5;
 
         public int YTickSpacing
@@ -103,16 +103,31 @@ namespace SharpTables.Graph
                 lineIndex++;
             }
 
-            // print the x divider
-            Console.WriteLine(new string('-', largestYTick.Length + 2) + "+" + new string('-', Values.Count * 3));
+
+            // print the x axis
+            Console.Write(new string('-', largestYTick.Length + 2) + "+");
+            for (int i = 0; i < Values.Count; i++)
+            {
+                Console.Write(new string('-', Values[i].ToString("0.0").Length + xTickSpacing * 2));
+            }
+
+            Console.WriteLine();
 
             // print the x ticks centered on bars
-            Console.Write(new string(' ', largestYTick.Length + 2));
+            Console.Write(new string(' ', largestYTick.Length + 2) + '|');
             for (int i = 0; i < Values.Count; i++)
             {
                 var num = Values[i];
                 int len = num.ToString("0.0").Length;
-                lPadding = new string(' ', len / 2 + xTickSpacing - (i == Values.Count - 1 ? 2 : 1) - (len % 2 != 0 ? 1 : 0));
+
+                if(i == 0)
+                {
+                    lPadding = new string(' ', len / 2 + xTickSpacing - (len % 2 != 0 ? 1 : 0) - 2);
+                }
+                else
+                    lPadding = new string(' ', len / 2 + xTickSpacing - (i == Values.Count - 1 ? 2 : 1) - (len % 2 != 0 ? 1 : 0));
+
+
                 rPadding = new string(' ', len / 2 + xTickSpacing - 1 - (len % 2 != 0 ? 1 : 0));
                 Console.Write($"{lPadding}{Values[i].ToString("0.0")}{rPadding}");
             }
