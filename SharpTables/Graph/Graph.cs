@@ -6,105 +6,60 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpTables.Graph
 {
-    public class Graph
+    public class Graph<T>
     {
-        public List<double> Values { get; set; }
-
-
-        private int yTickSpacing = 1;
-        private int xTickSpacing = 1;
-        private int numOfYTicks = 5;
-
-        public Func<double, string> XTickGetter { get; set; } = (x) => x.ToString("0.000");
-        public Func<double, string> YTickGetter { get; set; } = (y) => y.ToString("0.000");
-
-        public int YTickSpacing
-        {
-            get => yTickSpacing;
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentException("Value must be greater than 0");
-                }
-
-                yTickSpacing = value;
-            }
-        }
-
-        public int XTickSpacing
-        {
-            get => xTickSpacing;
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentException("Value must be greater than 0");
-                }
-
-                xTickSpacing = value;
-            }
-        }
-
-        public int NumOfYTicks
-        {
-            get => numOfYTicks;
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentException("Value must be greater than 0");
-                }
-
-                numOfYTicks = value;
-            }
-        }
+        public List<T> Values { get; set; }
+        public GraphSettings<T> Settings { get; set; } 
+        public GraphFormatting Formatting { get; set; }
 
         public void Write()
         {
-            var max = Values.Max() * 1.1f;
-            var min = Values.Min() * 0.9f;
+            // Setup
+            var values = Values.Select(Settings.ValueGetter).ToList();
+            var max = values.Max() * 1.1f;
+            var min = values.Min() * 0.9f;
             int yTickPadding = 2;
             int xTickPadding = 2;
 
-            int maxStrlen = YTickGetter(max).Length;
-            int minStrlen = YTickGetter(min).Length;
-
-            (int l, int t) = Console.GetCursorPosition();
+            int maxStrlen = Settings.YTickFormatter(max).Length;
+            int minStrlen = Settings.YTickFormatter(min).Length;
 
             int x0 = maxStrlen + yTickPadding + 1;
-            int y0 = numOfYTicks * yTickSpacing;
+            int y0 = Settings.NumOfYTicks * Settings.YAxisPadding;
 
             int[] numCenterCoords = new int[Values.Count];
             int[] numsOffset = new int[Values.Count];
 
+            // Get coordinates for numbers and offsets to position bars
             for (int i = 0; i < Values.Count; i++)
             {
-                numsOffset[i] = XTickGetter(Values[i]).Length / 2;
+                numsOffset[i] = Settings.XTickFormatter(Values[i]).Length / 2;
                 if (i == 0)
                 {
                     numCenterCoords[i] = x0 + 1;
                 }
                 else
                 {
-                    numCenterCoords[i] = numCenterCoords[i - 1] + XTickGetter(Values[i - 1]).Length + xTickPadding + 1;
+                    numCenterCoords[i] = numCenterCoords[i - 1] + Settings.XTickFormatter(Values[i - 1]).Length + xTickPadding + 1;
                 }
             }
 
-            int lineCount = numOfYTicks * (yTickSpacing + 1);
-            int lineWidth = numCenterCoords[Values.Count - 1] + XTickGetter(Values[Values.Count - 1]).Length + xTickPadding + 1;
+            int lineCount = Settings.NumOfYTicks * (Settings.YAxisPadding + 1);
+            int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
-
+            // Build the graph
             for (int y = 0; y <= lineCount; y++)
             {
+
                 double yVal = max - y * (max - min) / lineCount;
                 if (y == lineCount)
                     yVal = min;
-                // Y tick
-                if (y % (yTickSpacing + 1) == 0)
+
+                // Y ticks
+                if (y % (Settings.YAxisPadding + 1) == 0)
                 {
-                    Console.Write(YTickGetter(yVal));
-                    Console.Write(new string(' ', maxStrlen - YTickGetter(yVal).Length + yTickPadding));
+                    Console.Write(Settings.YTickFormatter(yVal));
+                    Console.Write(new string(' ', maxStrlen - Settings.YTickFormatter(yVal).Length + yTickPadding));
                     Console.Write("|");
                 }
                 else
@@ -112,6 +67,7 @@ namespace SharpTables.Graph
                     Console.Write(new string(' ', maxStrlen + yTickPadding));
                     Console.Write("|");
                 }
+                // Bars
                 for (int x = x0; x <= lineWidth; x++)
                 {
                     bool hitBar = false;
@@ -119,7 +75,7 @@ namespace SharpTables.Graph
                     {
                         if (numCenterCoords[i] + numsOffset[i] == x)
                         {
-                            if (Values[i] >= yVal)
+                            if (values[i] >= yVal)
                             {
                                 Console.Write("#");
                                 hitBar = true;
@@ -138,6 +94,8 @@ namespace SharpTables.Graph
                 }
                 Console.WriteLine();
             }
+
+            // Draw X axis
             lineCount++;
             string xAxis = new string('-', lineWidth);
 
@@ -151,6 +109,7 @@ namespace SharpTables.Graph
             xAxis = xAxis.Insert(x0-1, "+");
 
             Console.WriteLine(xAxis);
+            // Draw X axis ticks
             for(int x = 0; x < lineWidth;)
             {
                 if(x == x0 - 1)
@@ -164,8 +123,8 @@ namespace SharpTables.Graph
                 {
                     if (numCenterCoords[i] == x)
                     {
-                        Console.Write(XTickGetter(Values[i]));
-                        x += XTickGetter(Values[i]).Length;
+                        Console.Write(Settings.XTickFormatter(Values[i]));
+                        x += Settings.XTickFormatter(Values[i]).Length;
                         hasHit = true;
                         break;
                     }
@@ -174,10 +133,6 @@ namespace SharpTables.Graph
                 {
                     Console.Write(' ');
                     x++;
-                }
-                else
-                {
-                    hasHit = false;
                 }
             }
 
