@@ -9,8 +9,8 @@ namespace SharpTables.Graph
     public class Graph<T>
     {
         public List<T> Values { get; set; }
-        public GraphSettings<T> Settings { get; set; } 
-        public GraphFormatting Formatting { get; set; }
+        public GraphSettings<T> Settings { get; set; } = new();
+        public GraphFormatting Formatting { get; set; } = new();
 
         public void Write()
         {
@@ -59,13 +59,13 @@ namespace SharpTables.Graph
                 if (y % (Settings.YAxisPadding + 1) == 0)
                 {
                     Console.Write(Settings.YTickFormatter(yVal));
-                    Console.Write(new string(' ', maxStrlen - Settings.YTickFormatter(yVal).Length + yTickPadding));
-                    Console.Write("|");
+                    Console.Write(new string(Formatting.EmptyPoint, maxStrlen - Settings.YTickFormatter(yVal).Length + yTickPadding));
+                    Console.Write(Formatting.YAxisTick);
                 }
                 else
                 {
-                    Console.Write(new string(' ', maxStrlen + yTickPadding));
-                    Console.Write("|");
+                    Console.Write(new string(Formatting.EmptyPoint, maxStrlen + yTickPadding));
+                    Console.Write(Formatting.VerticalLine);
                 }
                 // Bars
                 for (int x = x0; x <= lineWidth; x++)
@@ -77,7 +77,7 @@ namespace SharpTables.Graph
                         {
                             if (values[i] >= yVal)
                             {
-                                Console.Write("#");
+                                Console.Write(Formatting.GraphIcon);
                                 hitBar = true;
                             }
                         }
@@ -86,7 +86,12 @@ namespace SharpTables.Graph
 
                     if (!hitBar)
                     {
-                        Console.Write('.');
+                        if(y % (Settings.YAxisPadding + 1) == 0)
+                        {
+                            Console.Write(Formatting.YAxisTickLine);
+                        }
+                        else
+                            Console.Write(Formatting.EmptyPoint);
                     }
                     else
                         hitBar = false;
@@ -97,16 +102,16 @@ namespace SharpTables.Graph
 
             // Draw X axis
             lineCount++;
-            string xAxis = new string('-', lineWidth);
+            string xAxis = new string(Formatting.HorizontalLine, lineWidth);
 
             // Put a "+" where the bars are
             for (int i = 0; i < Values.Count; i++)
             {
                 xAxis = xAxis.Remove(numCenterCoords[i] + numsOffset[i], 1);
-                xAxis = xAxis.Insert(numCenterCoords[i] + numsOffset[i], "+");
+                xAxis = xAxis.Insert(numCenterCoords[i] + numsOffset[i], Formatting.XAxisTick.ToString());
             }
             xAxis = xAxis.Remove(x0-1, 1);
-            xAxis = xAxis.Insert(x0-1, "+");
+            xAxis = xAxis.Insert(x0-1, Formatting.XAxisTick.ToString());
 
             Console.WriteLine(xAxis);
             // Draw X axis ticks
@@ -114,7 +119,7 @@ namespace SharpTables.Graph
             {
                 if(x == x0 - 1)
                 {
-                    Console.Write('|');
+                    Console.Write(Formatting.VerticalLine);
                     x++;
                     continue;
                 }
