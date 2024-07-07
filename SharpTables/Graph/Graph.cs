@@ -54,19 +54,22 @@ namespace SharpTables.Graph
                 double yVal = max - y * (max - min) / lineCount;
                 if (y == lineCount)
                     yVal = min;
-
                 // Y ticks
                 if (y % (Settings.YAxisPadding + 1) == 0)
                 {
+                    Console.ForegroundColor = Formatting.YAxisLabelColor;
                     Console.Write(Settings.YTickFormatter(yVal));
+                    Console.ForegroundColor = Formatting.YAxisColor;
                     Console.Write(new string(Formatting.EmptyPoint, maxStrlen - Settings.YTickFormatter(yVal).Length + yTickPadding));
                     Console.Write(Formatting.YAxisTick);
                 }
                 else
                 {
+                    Console.ForegroundColor = Formatting.YAxisColor;
                     Console.Write(new string(Formatting.EmptyPoint, maxStrlen + yTickPadding));
                     Console.Write(Formatting.VerticalLine);
                 }
+                Console.ResetColor();
                 // Bars
                 for (int x = x0; x <= lineWidth; x++)
                 {
@@ -77,21 +80,28 @@ namespace SharpTables.Graph
                         {
                             if (values[i] >= yVal)
                             {
+                                Console.ForegroundColor = Formatting.GraphIconColor;
                                 Console.Write(Formatting.GraphIcon);
+                                Console.ResetColor();
                                 hitBar = true;
                             }
                         }
                     }
 
-
                     if (!hitBar)
                     {
-                        if(y % (Settings.YAxisPadding + 1) == 0)
+                        if (y % (Settings.YAxisPadding + 1) == 0)
                         {
+                            Console.ForegroundColor = Formatting.YAxisTickLineColor;
                             Console.Write(Formatting.YAxisTickLine);
+                            Console.ResetColor();
                         }
                         else
+                        {
+                            Console.ForegroundColor = Formatting.EmptyPointColor;
                             Console.Write(Formatting.EmptyPoint);
+                            Console.ResetColor();
+                        }
                     }
                     else
                         hitBar = false;
@@ -110,21 +120,36 @@ namespace SharpTables.Graph
                 xAxis = xAxis.Remove(numCenterCoords[i] + numsOffset[i], 1);
                 xAxis = xAxis.Insert(numCenterCoords[i] + numsOffset[i], Formatting.XAxisTick.ToString());
             }
-            xAxis = xAxis.Remove(x0-1, 1);
-            xAxis = xAxis.Insert(x0-1, Formatting.XAxisTick.ToString());
+            xAxis = xAxis.Remove(x0 - 1, 1);
+            xAxis = xAxis.Insert(x0 - 1, Formatting.Origin.ToString());
 
-            Console.WriteLine(xAxis);
-            // Draw X axis ticks
-            for(int x = 0; x < lineWidth;)
+            Console.ForegroundColor = Formatting.XAxisColor;
+            foreach(char c in xAxis)
             {
-                if(x == x0 - 1)
+                if(c == Formatting.XAxisTick)
+                {
+                    Console.ForegroundColor = Formatting.XAxisTickColor;
+                    Console.Write(c);
+                    Console.ForegroundColor = Formatting.XAxisColor;
+                }
+                else
+                {
+                    Console.Write(c);
+                }
+            }
+            Console.WriteLine();
+            Console.ForegroundColor = Formatting.XAxisLabelColor;
+            // Draw X axis ticks
+            for (int x = 0; x < lineWidth;)
+            {
+                if (x == x0 - 1)
                 {
                     Console.Write(Formatting.VerticalLine);
                     x++;
                     continue;
                 }
                 bool hasHit = false;
-                for(int i = 0; i < Values.Count ; i++)
+                for (int i = 0; i < Values.Count; i++)
                 {
                     if (numCenterCoords[i] == x)
                     {
@@ -140,6 +165,7 @@ namespace SharpTables.Graph
                     x++;
                 }
             }
+            Console.ResetColor();
 
 
         }

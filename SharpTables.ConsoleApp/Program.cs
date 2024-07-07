@@ -33,7 +33,7 @@ static string RandomString()
 {
     var random = new Random();
     var str = new StringBuilder();
-    var len = random.Next(3, 7);
+    var len = random.Next(3, 5);
     for (int i = 0; i < len; i++)
     {
         str.Append(RandomChar());
