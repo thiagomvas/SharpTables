@@ -14,7 +14,7 @@ var orders = new Faker<Order>()
 orders.ForEach(o => o.Price = Math.Round(o.Price, 2)); // Rounding the prices to 2 decimal places
 
 // Creating a formatting object from a template
-var tableFormatting = Formatting.ASCII with
+var tableFormatting = TableFormatting.ASCII with
 {
     DividerColor = ConsoleColor.DarkGray,
     BottomLeftDivider = '@',
@@ -22,7 +22,7 @@ var tableFormatting = Formatting.ASCII with
     TopLeftDivider = '@',
     TopRightDivider = '@',
     MiddleDivider = '%',
-    Header = Formatting.ASCII.Header with { Separated = true, }
+    Header = TableFormatting.ASCII.Header with { Separated = true, }
 };
 
 // Creating a cell preset action

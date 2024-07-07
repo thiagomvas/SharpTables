@@ -16,7 +16,7 @@
         /// <summary>
         /// The formatting options to be used when printing the table structure.
         /// </summary>
-        public Formatting TableFormatting { get; set; } = Formatting.Default;
+        public TableFormatting TableFormatting { get; set; } = TableFormatting.Default;
         /// <summary>
         /// Whether or not to display how many rows are in the table at the end of it.
         /// </summary>

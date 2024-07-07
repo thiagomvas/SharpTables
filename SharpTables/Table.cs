@@ -110,7 +110,7 @@ namespace SharpTables
         /// </summary>
         /// <param name="formatting">The formatting settings</param>
         /// <returns>The table with changes applied</returns>
-        public Table UseFormatting(Formatting formatting)
+        public Table UseFormatting(TableFormatting formatting)
         {
             Settings.TableFormatting = formatting;
             return this;
