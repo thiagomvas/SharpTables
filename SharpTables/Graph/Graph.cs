@@ -60,83 +60,6 @@ namespace SharpTables.Graph
             }
         }
 
-        public void PrintBarGraph()
-        {
-            double max = Values.Max() * 1.1;
-            double min = Values.Min() * 0.9;
-
-            string largestYTick = YTickGetter(max);
-            string largestXTick = XTickGetter(max);
-
-            int leftSpacing, rightSpacing;
-            leftSpacing = largestXTick.Length / 2;
-            rightSpacing = largestXTick.Length / 2 + 1;
-
-            string lPadding = new string(' ', leftSpacing);
-            string rPadding = new string(' ', rightSpacing);
-
-            int lineIndex = 0;
-            double tickDelta = (max - min) / numOfYTicks;
-            for (double i = max; i >= min - tickDelta; i -= tickDelta / (yTickSpacing + 1))
-            {
-                if (lineIndex % (yTickSpacing + 1) == 0)
-                {
-                    var emptySpaceOffset = new string(' ', largestYTick.Length + 2 - YTickGetter(i).Length);
-                    Console.Write($"{YTickGetter(i)}{emptySpaceOffset}|");
-                }
-                else
-                {
-                    Console.Write(new string(' ', largestYTick.Length + 2) + "|");
-                }
-                foreach (int num in Values)
-                {
-                    // resize padding to make sure the bar is centered on the x tick
-                    int len = XTickGetter(num).Length;
-                    lPadding = new string(' ', len / 2 + xTickSpacing - (len % 2 != 0 ? 1 : 0));
-                    rPadding = new string(' ', len / 2 + xTickSpacing);
-                    if (num >= i)
-                    {
-                        Console.Write($"{lPadding}#{rPadding}");
-                    }
-                    else
-                    {
-                        Console.Write($"{lPadding} {rPadding}");
-                    }
-                }
-                Console.WriteLine();
-                lineIndex++;
-            }
-
-
-            // print the x axis
-            Console.Write(new string('-', largestYTick.Length + 2) + "+");
-            for (int i = 0; i < Values.Count; i++)
-            {
-                Console.Write(new string('-', XTickGetter(Values[i]).Length + xTickSpacing * 2));
-            }
-
-            Console.WriteLine();
-
-            // print the x ticks centered on bars
-            Console.Write(new string(' ', largestYTick.Length + 2) + '|');
-            for (int i = 0; i < Values.Count; i++)
-            {
-                var num = Values[i];
-                int len = XTickGetter(num).Length;
-
-                if(i == 0)
-                {
-                    lPadding = new string(' ', len / 2 + xTickSpacing - (len % 2 != 0 ? 1 : 0) - 2);
-                }
-                else
-                    lPadding = new string(' ', len / 2 + xTickSpacing - (i == Values.Count - 1 ? 2 : 1) - (len % 2 != 0 ? 1 : 0));
-
-
-                rPadding = new string(' ', len / 2 + xTickSpacing - 1 - (len % 2 != 0 ? 1 : 0));
-                Console.Write($"{lPadding}{XTickGetter(Values[i])}{rPadding}");
-            }
-        }
-
         public void Write()
         {
             var max = Values.Max() * 1.1f;
@@ -155,10 +78,10 @@ namespace SharpTables.Graph
             int[] numCenterCoords = new int[Values.Count];
             int[] numsOffset = new int[Values.Count];
 
-            for(int i = 0; i < Values.Count; i++)
+            for (int i = 0; i < Values.Count; i++)
             {
                 numsOffset[i] = XTickGetter(Values[i]).Length / 2;
-                if(i == 0)
+                if (i == 0)
                 {
                     numCenterCoords[i] = x0 + 1;
                 }
@@ -170,52 +93,95 @@ namespace SharpTables.Graph
 
             int lineCount = numOfYTicks * (yTickSpacing + 1);
             int lineWidth = numCenterCoords[Values.Count - 1] + XTickGetter(Values[Values.Count - 1]).Length + xTickPadding + 1;
-            for(int y = 0; y <= lineCount; y++)
+
+
+            for (int y = 0; y <= lineCount; y++)
             {
                 double yVal = max - y * (max - min) / lineCount;
                 if (y == lineCount)
                     yVal = min;
                 // Y tick
-                if(y % (yTickSpacing + 1) == 0)
+                if (y % (yTickSpacing + 1) == 0)
                 {
-                    Console.SetCursorPosition(0, y);
                     Console.Write(YTickGetter(yVal));
                     Console.Write(new string(' ', maxStrlen - YTickGetter(yVal).Length + yTickPadding));
                     Console.Write("|");
                 }
                 else
                 {
-                    Console.SetCursorPosition(0, y);
                     Console.Write(new string(' ', maxStrlen + yTickPadding));
                     Console.Write("|");
                 }
-
-                for(int i = 0; i < Values.Count; i++)
+                for (int x = x0; x <= lineWidth; x++)
                 {
-                    if (Values[i] >= yVal)
+                    bool hitBar = false;
+                    for (int i = 0; i < Values.Count; i++)
                     {
-                        Console.SetCursorPosition(numCenterCoords[i] + numsOffset[i], y);
-                        Console.Write("#");
+                        if (numCenterCoords[i] + numsOffset[i] == x)
+                        {
+                            if (Values[i] >= yVal)
+                            {
+                                Console.Write("#");
+                                hitBar = true;
+                            }
+                        }
                     }
+
+
+                    if (!hitBar)
+                    {
+                        Console.Write('.');
+                    }
+                    else
+                        hitBar = false;
+
                 }
+                Console.WriteLine();
             }
             lineCount++;
-            Console.WriteLine();
             string xAxis = new string('-', lineWidth);
 
             // Put a "+" where the bars are
-            for(int i = 0; i < Values.Count; i++)
+            for (int i = 0; i < Values.Count; i++)
             {
                 xAxis = xAxis.Remove(numCenterCoords[i] + numsOffset[i], 1);
                 xAxis = xAxis.Insert(numCenterCoords[i] + numsOffset[i], "+");
             }
+            xAxis = xAxis.Remove(x0-1, 1);
+            xAxis = xAxis.Insert(x0-1, "+");
 
             Console.WriteLine(xAxis);
-            for(int i = 0; i < Values.Count; i++)
+            for(int x = 0; x < lineWidth;)
             {
-                Console.SetCursorPosition(numCenterCoords[i], lineCount + 1);
-                Console.Write(XTickGetter(Values[i]));
+                if(x == x0 - 1)
+                {
+                    Console.Write('|');
+                    x++;
+                    continue;
+                }
+                bool hasHit = false;
+                for(int i = 0; i < Values.Count ; i++)
+                {
+                    if (numCenterCoords[i] == x)
+                    {
+                        Console.Write(XTickGetter(Values[i]));
+                        x += XTickGetter(Values[i]).Length;
+                        hasHit = true;
+                        break;
+                    }
+                }
+                if (!hasHit)
+                {
+                    Console.Write(' ');
+                    x++;
+                }
+                else
+                {
+                    hasHit = false;
+                }
             }
+
+
         }
     }
 }
