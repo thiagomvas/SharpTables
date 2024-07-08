@@ -1,42 +1,27 @@
-﻿using SharpTables.Graph;
-using System.Text;
+﻿using Bogus;
+using SharpTables;
+using SharpTables.Graph;
 
-var graph = new Graph<double>()
-{
-    Values = [10.1, 6.3, 20.12345, 1, 17.1, 11.9, 12, 19.361, 9.123]
-};
+var foos = new Faker<Foo>()
+    .RuleFor(o => o.Name, f => f.Name.FirstName())
+    .RuleFor(o => o.Age, f => f.Random.Number(1, 100));
 
-var settings = new GraphSettings<double>()
-{
-    ValueGetter = x => x,
-    XTickFormatter = x => RandomString(),
-    YTickFormatter = y => y.ToString("0.0"),
-    YAxisPadding = 2,
-    XAxisPadding = 1,
-    NumOfYTicks = 5
-};
+var graph = new Graph<Foo>();
+graph.Values = foos.Generate(10);
 
-
-graph.Settings = settings;
+graph.Settings.ValueGetter = x => x.Age;
+graph.Settings.XTickFormatter = x => x.Name;
+graph.Settings.YTickFormatter = y => y.ToString("0.0");
+graph.Settings.YAxisPadding = 1;
+graph.Settings.XAxisPadding = 1;
+graph.Settings.NumOfYTicks = 5;
 
 graph.Write();
 Console.WriteLine();
-
-static char RandomChar()
+Console.WriteLine(graph);
+Table.FromDataSet(graph.Values.OrderByDescending(f => f.Age)).Print();
+public class Foo
 {
-    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var random = new Random();
-    return chars[random.Next(chars.Length)];
-}
-
-static string RandomString()
-{
-    var random = new Random();
-    var str = new StringBuilder();
-    var len = random.Next(3, 5);
-    for (int i = 0; i < len; i++)
-    {
-        str.Append(RandomChar());
-    }
-    return str.ToString();
+    public string Name { get; set; }
+    public int Age { get; set; }
 }
