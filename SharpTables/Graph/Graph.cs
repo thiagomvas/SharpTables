@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using SharpTables.Pagination;
 
 namespace SharpTables.Graph
 {
@@ -6,7 +7,7 @@ namespace SharpTables.Graph
     /// Utility class to draw a graph in the console. Not recommended for very large data sets. 
     /// </summary>
     /// <typeparam name="T">The type of data stored in the graph</typeparam>
-    public class Graph<T>
+    public class Graph<T> : IConsoleWriteable
     {
         /// <summary>
         /// The values to be graphed
@@ -41,6 +42,16 @@ namespace SharpTables.Graph
             Formatting = formatting;
         }
 
+        public PaginatedGraph<T> ToPaginatedGraph(int columnsPerPage)
+        {
+            var paginatedGraph = new PaginatedGraph<T>();
+            paginatedGraph.Values = Values;
+            paginatedGraph.Settings = Settings;
+            paginatedGraph.Formatting = Formatting;
+            paginatedGraph.ColumnsPerPage = columnsPerPage;
+            return paginatedGraph;
+        }
+
         /// <summary>
         /// Writes the graph to the console
         /// </summary>
@@ -48,8 +59,8 @@ namespace SharpTables.Graph
         {
             // Setup
             var values = Values.Select(Settings.ValueGetter).ToList();
-            var max = values.Max() * 1.1f;
-            var min = values.Min() * 0.9f;
+            var max = Settings.MaxValue ?? values.Max() * 1.1f;
+            var min = Settings.MinValue ?? values.Min() * 0.9f;
             int yTickPadding = 2;
             int xTickPadding = 2;
 
