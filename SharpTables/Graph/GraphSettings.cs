@@ -35,5 +35,7 @@
         /// Gets or sets the number of Y-axis ticks.
         /// </summary>
         public int NumOfYTicks { get; set; } = 5;
+
+        public string Header { get; set; } = string.Empty;
     }
 }

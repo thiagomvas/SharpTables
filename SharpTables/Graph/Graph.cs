@@ -3,7 +3,7 @@
 namespace SharpTables.Graph
 {
     /// <summary>
-    /// Utility class to draw a graph in the console
+    /// Utility class to draw a graph in the console. Not recommended for very large data sets. 
     /// </summary>
     /// <typeparam name="T">The type of data stored in the graph</typeparam>
     public class Graph<T>
@@ -78,6 +78,10 @@ namespace SharpTables.Graph
 
             int lineCount = Settings.NumOfYTicks * (Settings.YAxisPadding + 1);
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
+
+            // Print the header centered
+            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
             for (int y = 0; y <= lineCount; y++)

@@ -15,10 +15,10 @@ graph.Settings.YTickFormatter = y => y.ToString("0.0");
 graph.Settings.YAxisPadding = 1;
 graph.Settings.XAxisPadding = 1;
 graph.Settings.NumOfYTicks = 5;
+graph.Settings.Header = "Ages of People";
 
 graph.Write();
 Console.WriteLine();
-Console.WriteLine(graph);
 Table.FromDataSet(graph.Values.OrderByDescending(f => f.Age)).Print();
 public class Foo
 {
