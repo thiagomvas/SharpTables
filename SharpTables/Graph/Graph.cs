@@ -24,28 +24,39 @@ namespace SharpTables.Graph
         /// </summary>
         public GraphFormatting Formatting { get; set; } = new();
 
+        public Graph(IEnumerable<T> values)
+        {
+            Values = values.ToList();
+        }
+
         /// <summary>
         /// Sets the settings for the graph
         /// </summary>
         /// <param name="settings">The settings object</param>
-        public void UseSettings(GraphSettings<T> settings)
+        public Graph<T> UseSettings(GraphSettings<T> settings)
         {
             Settings = settings;
+            return this;
         }
 
         /// <summary>
         /// Sets the formatting for the graph
         /// </summary>
         /// <param name="formatting">The formatting object</param>
-        public void UseFormatting(GraphFormatting formatting)
+        public Graph<T> UseFormatting(GraphFormatting formatting)
         {
             Formatting = formatting;
+            return this;
+        }
+
+        public static Graph<T> FromDataSet<T>(IEnumerable<T> data)
+        {
+            return new Graph<T>(data);
         }
 
         public PaginatedGraph<T> ToPaginatedGraph(int columnsPerPage)
         {
-            var paginatedGraph = new PaginatedGraph<T>();
-            paginatedGraph.Values = Values;
+            var paginatedGraph = new PaginatedGraph<T>(Values);
             paginatedGraph.Settings = Settings;
             paginatedGraph.Formatting = Formatting;
             paginatedGraph.ColumnsPerPage = columnsPerPage;

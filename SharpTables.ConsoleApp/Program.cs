@@ -6,20 +6,27 @@ var foos = new Faker<Foo>()
     .RuleFor(o => o.Name, f => f.Name.FirstName())
     .RuleFor(o => o.Age, f => f.Random.Number(1, 100));
 
-var graph = new Graph<Foo>();
-graph.Values = foos.Generate(10);
+var graph = new Graph<Foo>(foos.Generate(15));
 
-graph.Settings.ValueGetter = x => x.Age;
-graph.Settings.XTickFormatter = x => x.Name;
-graph.Settings.YTickFormatter = y => y.ToString("0.0");
-graph.Settings.YAxisPadding = 1;
-graph.Settings.XAxisPadding = 1;
-graph.Settings.NumOfYTicks = 5;
-graph.Settings.Header = "Ages of People";
+var settings = new GraphSettings<Foo>()
+{
+    ValueGetter = x => x.Age,
+    XTickFormatter = x => x.Name,
+    YTickFormatter = y => y.ToString("0.0"),
+    YAxisPadding = 1,
+    XAxisPadding = 1,
+    NumOfYTicks = 5,
+    Header = "Ages",
+    MaxValue = 100,
+    MinValue = 0,
+};
 
-graph.Write();
+graph.Settings = settings;
 Console.WriteLine();
-Table.FromDataSet(graph.Values.OrderByDescending(f => f.Age)).Print();
+graph.ToPaginatedGraph(5).PrintPage(2);
+Console.WriteLine();
+
+Table.FromDataSet(graph.Values.OrderByDescending(f => f.Age)).Write();
 public class Foo
 {
     public string Name { get; set; }

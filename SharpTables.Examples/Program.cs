@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using SharpTables;
 using SharpTables.Examples;
+using SharpTables.Pagination;
 
 // Using bogus to generate fake data
 var orders = new Faker<Order>()

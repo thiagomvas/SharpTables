@@ -37,5 +37,8 @@
         public int NumOfYTicks { get; set; } = 5;
 
         public string Header { get; set; } = string.Empty;
+
+        public double? MaxValue { get; set; } = null;
+        public double? MinValue { get; set; } = null;
     }
 }

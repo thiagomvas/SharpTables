@@ -50,7 +50,7 @@ namespace SharpTables.Pagination
                 throw new ArgumentOutOfRangeException(nameof(page));
             }
 
-            Pages[page].Print();
+            Pages[page].Write();
         }
 
         /// <inheritdoc/>
