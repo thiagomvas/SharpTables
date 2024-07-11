@@ -64,7 +64,7 @@ PaginatedTable paginatedTable = table.ToPaginatedTable(10); // Creating a pagina
 while (true)
 {
     Console.Clear();
-    paginatedTable.PrintCurrentPage();
+    paginatedTable.PrintCurrent();
     Console.WriteLine($"Page {paginatedTable.CurrentPageIndex + 1} of {paginatedTable.TotalPages}");
     Console.WriteLine("[<-] Previous Page | [->] Next Page | [S] Write as string | [H] Write as HTML | [M] Write as Markdown | [F] Print full table | [ESC] Exit");
 
@@ -73,10 +73,10 @@ while (true)
     switch (key)
     {
         case ConsoleKey.LeftArrow:
-            paginatedTable.PreviousPage(); // Prints the previous page and moves the page index back
+            paginatedTable.PrintPrevious(); // Prints the previous page and moves the page index back
             break;
         case ConsoleKey.RightArrow:
-            paginatedTable.NextPage(); // Prints the next page and moves the page index forward
+            paginatedTable.PrintNext(); // Prints the next page and moves the page index forward
             break;
         case ConsoleKey.Escape:
             return;
@@ -100,7 +100,7 @@ while (true)
             break;
         case ConsoleKey.F:
             Console.Clear();
-            table.Print(); // Prints the original table, before pagination
+            table.Write(); // Prints the original table, before pagination
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             break;
