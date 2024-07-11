@@ -38,7 +38,7 @@ Action<Cell> cellPreset = c =>
     {
         c.Color = ConsoleColor.Blue;
     }
-    else if(c.IsNumeric)
+    else if (c.IsNumeric)
     {
         c.Alignment = Alignment.Center;
     }
@@ -51,7 +51,7 @@ customHeader.Cells.ForEach(c => c.Color = ConsoleColor.DarkGreen); // Setting th
 // Creating a table from the data
 Table table = Table.FromDataSet(orders)                // This overload will generate a table based on the properties. Header is automatically generated
     .UseFormatting(tableFormatting)                    // Applying the formatting
-  //.SetHeader(customHeader)                           // Setting a custom header. 
+                                                       //.SetHeader(customHeader)                           // Setting a custom header. 
     .UsePreset(cellPreset)                             // Applying the cell preset
     .DisplayRowIndexes()                               // Displaying row indexes
     .UseRowIndexColor(ConsoleColor.DarkBlue)           // Setting the row index color

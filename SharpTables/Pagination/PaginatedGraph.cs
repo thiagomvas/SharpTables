@@ -1,9 +1,12 @@
 ﻿using SharpTables.Graph;
 using System.Collections;
-using System.Xml;
 
 namespace SharpTables.Pagination
 {
+    /// <summary>
+    /// Encapsulates a list of graphs and provides methods to navigate through them. Implements <see cref="IPagination{T}"/> and <see cref="IEnumerable{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The data type being graphed</typeparam>
     public class PaginatedGraph<T> : IPagination<Graph<T>>
     {
         private List<T> values = new();
@@ -11,6 +14,9 @@ namespace SharpTables.Pagination
         private GraphSettings<T> _settings;
         private GraphFormatting _formatting;
 
+        /// <summary>
+        /// The settings applied to all graphs in the pagination.
+        /// </summary>
         public GraphSettings<T> Settings
         {
             get => _settings;
@@ -21,6 +27,9 @@ namespace SharpTables.Pagination
             }
         }
 
+        /// <summary>
+        /// The formatting applied to all graphs in the pagination.
+        /// </summary>
         public GraphFormatting Formatting
         {
             get => _formatting;

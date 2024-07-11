@@ -1,5 +1,5 @@
-﻿using System.Text;
-using SharpTables.Pagination;
+﻿using SharpTables.Pagination;
+using System.Text;
 
 namespace SharpTables.Graph
 {
@@ -283,9 +283,9 @@ namespace SharpTables.Graph
             xAxis = xAxis.Insert(x0 - 1, Formatting.Origin.ToString());
 
             Console.ForegroundColor = Formatting.XAxisColor;
-            foreach(char c in xAxis)
+            foreach (char c in xAxis)
             {
-                if(c == Formatting.XAxisTick)
+                if (c == Formatting.XAxisTick)
                 {
                     Console.ForegroundColor = Formatting.XAxisTickColor;
                     Console.Write(c);

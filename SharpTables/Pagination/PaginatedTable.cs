@@ -3,7 +3,7 @@
 namespace SharpTables.Pagination
 {
     /// <summary>
-    /// Encapsulates a list of tables and provides methods to navigate through them. Implements IEnumerable to allow foreach iteration.
+    /// Encapsulates a list of tables and provides methods to navigate through them. Implements <see cref="IPagination{T}"/> and <see cref="IEnumerable{T}"/>.
     /// </summary>
     public class PaginatedTable : IPagination<Table>
     {
@@ -22,7 +22,6 @@ namespace SharpTables.Pagination
                 _currentPage = value;
             }
         }
-
         /// <inheritdoc/>
         public int TotalPages => Pages.Count;
 
