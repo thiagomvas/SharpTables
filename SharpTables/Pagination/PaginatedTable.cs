@@ -1,16 +1,14 @@
 ﻿using System.Collections;
 
-namespace SharpTables
+namespace SharpTables.Pagination
 {
     /// <summary>
-    /// Encapsulates a list of tables and provides methods to navigate through them. Implements IEnumerable to allow foreach iteration.
+    /// Encapsulates a list of tables and provides methods to navigate through them. Implements <see cref="IPagination{T}"/> and <see cref="IEnumerable{T}"/>.
     /// </summary>
-    public class PaginatedTable : IEnumerable<Table>
+    public class PaginatedTable : IPagination<Table>
     {
         private int _currentPage = 0;
-        /// <summary>
-        /// Gets the current page number. Will never go out of bounds.
-        /// </summary>
+        /// <inheritdoc/>
         public int CurrentPageIndex
         {
             get => _currentPage;
@@ -24,22 +22,15 @@ namespace SharpTables
                 _currentPage = value;
             }
         }
-
-        /// <summary>
-        /// Gets the total number of pages.
-        /// </summary>
+        /// <inheritdoc/>
         public int TotalPages => Pages.Count;
 
-        /// <summary>
-        /// Gets the current page's table.
-        /// </summary>
+        /// <inheritdoc/>
         public Table Current => Pages[CurrentPageIndex];
 
-        /// <summary>
-        /// Gets or sets the pages.
-        /// </summary>
+        /// <inheritdoc/>
 
-        public List<Table> Pages;
+        public List<Table> Pages { get; set; }
 
         /// <summary>
         /// Creates a new instance of PaginatedTable with the given pages.
@@ -47,13 +38,10 @@ namespace SharpTables
         /// <param name="pages">The tables to be used as pages</param>
         public PaginatedTable(List<Table> pages)
         {
-            this.Pages = pages;
+            Pages = pages;
         }
 
-        /// <summary>
-        /// Prints the page at the given index.
-        /// </summary>
-        /// <param name="page"></param>
+        /// <inheritdoc/>
         public void PrintPage(int page)
         {
             if (page < 0 || page > TotalPages)
@@ -61,39 +49,44 @@ namespace SharpTables
                 throw new ArgumentOutOfRangeException(nameof(page));
             }
 
-            Pages[page].Print();
+            Pages[page].Write();
         }
 
-        /// <summary>
-        /// Prints the current page.
-        /// </summary>
-        public void PrintCurrentPage()
+        /// <inheritdoc/>
+        public void PrintCurrent()
         {
             PrintPage(CurrentPageIndex);
         }
 
-        /// <summary>
-        /// Prints the next page.
-        /// </summary>
-        public void NextPage()
+        /// <inheritdoc/>
+        public void PrintNext()
         {
             if (CurrentPageIndex < TotalPages - 1)
             {
                 CurrentPageIndex++;
-                PrintCurrentPage();
+                PrintCurrent();
             }
         }
 
-        /// <summary>
-        /// Prints the previous page.
-        /// </summary>
-        public void PreviousPage()
+        /// <inheritdoc/>
+        public void PrintPrevious()
         {
             if (CurrentPageIndex >= 1)
             {
                 CurrentPageIndex--;
-                PrintCurrentPage();
+                PrintCurrent();
             }
+        }
+
+        /// <inheritdoc/>
+        public void GoToPage(int page)
+        {
+            if (page < 0 || page > TotalPages)
+            {
+                throw new ArgumentOutOfRangeException(nameof(page));
+            }
+
+            CurrentPageIndex = page;
         }
 
         /// <inheritdoc/>

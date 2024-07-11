@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents the formatting options for tables in SharpTables.
     /// </summary>
-    public record Formatting
+    public record TableFormatting
     {
         #region Properties
 
@@ -79,12 +79,12 @@
         /// <summary>
         /// Gets the default formatting options for tables.
         /// </summary>
-        public static readonly Formatting Default = new();
+        public static readonly TableFormatting Default = new();
 
         /// <summary>
         /// Gets the ASCII formatting options for tables.
         /// </summary>
-        public static readonly Formatting ASCII = new Formatting
+        public static readonly TableFormatting ASCII = new TableFormatting
         {
             TopLeftDivider = '+',
             TopRightDivider = '+',
@@ -118,7 +118,7 @@
         /// <summary>
         /// Gets the double lined formatting options for tables.
         /// </summary>
-        public static readonly Formatting DoubleLined = new Formatting
+        public static readonly TableFormatting DoubleLined = new TableFormatting
         {
             TopLeftDivider = '╔',
             TopRightDivider = '╗',
@@ -152,7 +152,7 @@
         /// <summary>
         /// Gets the single lined formatting options for tables.
         /// </summary>
-        public static readonly Formatting SingleLined = new Formatting
+        public static readonly TableFormatting SingleLined = new TableFormatting
         {
             TopLeftDivider = '┌',
             TopRightDivider = '┐',
@@ -186,7 +186,7 @@
         /// <summary>
         /// Gets the minimalist formatting options for tables.
         /// </summary>
-        public static readonly Formatting Minimalist = new Formatting
+        public static readonly TableFormatting Minimalist = new TableFormatting
         {
             TopLeftDivider = ' ',
             TopRightDivider = ' ',

@@ -8,7 +8,7 @@ namespace SharpTables.Tests
         [SetUp]
         public void Setup()
         {
-            Formatting f = Formatting.Minimalist;
+            TableFormatting f = TableFormatting.Minimalist;
             data = new object[,]
             {
                 { "Name", "Age", "City" },

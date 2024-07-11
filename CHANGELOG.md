@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.3.0"></a>
+## [1.3.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.3.0) (2024-07-11)
+
+### Features
+
+* Add coloring to Graph ([f076a2e](https://www.github.com/thiagomvas/SharpTables/commit/f076a2e3968b0d8cf0f23ea43183361e799b8873))
+* Add configuration methods for graph settings ([bc341e2](https://www.github.com/thiagomvas/SharpTables/commit/bc341e24d944e58c18b2db8f2d3c96b46d1304c5))
+* Add Graph ([aa5245f](https://www.github.com/thiagomvas/SharpTables/commit/aa5245f5ff307314b78d3a667c6c64059d2780eb))
+* Add Graph Header title ([cd6e4b8](https://www.github.com/thiagomvas/SharpTables/commit/cd6e4b8dc0f2b6e7076fc1b58b0901f509d1cfb5))
+* Add graph pre-defined min and max values for y ticks ([49fa258](https://www.github.com/thiagomvas/SharpTables/commit/49fa2589609f5a0ad0a0ee32bdfce69c8cd9522d))
+* Add GraphFormatting ([ed0abcf](https://www.github.com/thiagomvas/SharpTables/commit/ed0abcfb703d158b2820209340291b4bb382e6ed))
+* Add GraphSettings<T> ([d780b07](https://www.github.com/thiagomvas/SharpTables/commit/d780b0736d8c1c609489d84d7d5faec29e49b0f8))
+* Add IConsoleWriteable, implemented by Graph and Table ([de88e8b](https://www.github.com/thiagomvas/SharpTables/commit/de88e8be87061244f88772b3143364e66a617b25))
+* Add pagination interface, implemented by paginated table and graph ([9fd914a](https://www.github.com/thiagomvas/SharpTables/commit/9fd914a9f5b7862d335d99f1c7a54a9b02153dfe))
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.2.1) (2024-07-05)
 

@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using SharpTables;
 using SharpTables.Examples;
+using SharpTables.Pagination;
 
 // Using bogus to generate fake data
 var orders = new Faker<Order>()
@@ -14,7 +15,7 @@ var orders = new Faker<Order>()
 orders.ForEach(o => o.Price = Math.Round(o.Price, 2)); // Rounding the prices to 2 decimal places
 
 // Creating a formatting object from a template
-var tableFormatting = Formatting.ASCII with
+var tableFormatting = TableFormatting.ASCII with
 {
     DividerColor = ConsoleColor.DarkGray,
     BottomLeftDivider = '@',
@@ -22,7 +23,7 @@ var tableFormatting = Formatting.ASCII with
     TopLeftDivider = '@',
     TopRightDivider = '@',
     MiddleDivider = '%',
-    Header = Formatting.ASCII.Header with { Separated = true, }
+    Header = TableFormatting.ASCII.Header with { Separated = true, }
 };
 
 // Creating a cell preset action
@@ -37,7 +38,7 @@ Action<Cell> cellPreset = c =>
     {
         c.Color = ConsoleColor.Blue;
     }
-    else if(c.IsNumeric)
+    else if (c.IsNumeric)
     {
         c.Alignment = Alignment.Center;
     }
@@ -50,7 +51,7 @@ customHeader.Cells.ForEach(c => c.Color = ConsoleColor.DarkGreen); // Setting th
 // Creating a table from the data
 Table table = Table.FromDataSet(orders)                // This overload will generate a table based on the properties. Header is automatically generated
     .UseFormatting(tableFormatting)                    // Applying the formatting
-  //.SetHeader(customHeader)                           // Setting a custom header. 
+                                                       //.SetHeader(customHeader)                           // Setting a custom header. 
     .UsePreset(cellPreset)                             // Applying the cell preset
     .DisplayRowIndexes()                               // Displaying row indexes
     .UseRowIndexColor(ConsoleColor.DarkBlue)           // Setting the row index color

@@ -1,11 +1,12 @@
 ﻿using SharpTables.Annotations;
+using SharpTables.Pagination;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
 
 namespace SharpTables
 {
-    public class Table
+    public class Table : IConsoleWriteable
     {
         /// <summary>
         /// Gets the header of the table. To modify it, use <see cref="SetHeader(Row)"/>
@@ -110,7 +111,7 @@ namespace SharpTables
         /// </summary>
         /// <param name="formatting">The formatting settings</param>
         /// <returns>The table with changes applied</returns>
-        public Table UseFormatting(Formatting formatting)
+        public Table UseFormatting(TableFormatting formatting)
         {
             Settings.TableFormatting = formatting;
             return this;
@@ -275,7 +276,7 @@ namespace SharpTables
         /// <summary>
         /// Prints the table to the console.
         /// </summary>
-        public void Print()
+        public void Write()
         {
             var rows = Rows.Select(r => r.Clone()).ToList();
             foreach (var row in rows)
