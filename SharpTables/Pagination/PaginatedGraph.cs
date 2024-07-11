@@ -32,6 +32,7 @@ namespace SharpTables.Pagination
         }
 
         private int _columnsPerPage = 7;
+        /// <inheritdoc/>
         public int ColumnsPerPage
         {
             get => _columnsPerPage;
@@ -40,14 +41,18 @@ namespace SharpTables.Pagination
                 _columnsPerPage = value;
                 Paginate();
             }
-        } 
+        }
 
+        /// <inheritdoc/>
         public int CurrentPageIndex { get; private set; } = 0;
 
+        /// <inheritdoc/>
         public int TotalPages => Pages.Count;
 
+        /// <inheritdoc/>
         public Graph<T> Current => Pages[CurrentPageIndex];
 
+        /// <inheritdoc/>
         public List<Graph<T>> Pages { get; set; }
 
         public PaginatedGraph(IEnumerable<T> values)

@@ -36,9 +36,18 @@
         /// </summary>
         public int NumOfYTicks { get; set; } = 5;
 
+        /// <summary>
+        /// Gets or sets the header for the graph.
+        /// </summary>
         public string Header { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the maximum value for the Y-axis. Leave null for automatic sizing.
+        /// </summary>
         public double? MaxValue { get; set; } = null;
+        /// <summary>
+        /// Gets or sets the minimum value for the Y-axis. Leave null for automatic sizing.
+        /// </summary>
         public double? MinValue { get; set; } = null;
     }
 }

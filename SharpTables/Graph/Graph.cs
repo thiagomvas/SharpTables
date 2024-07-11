@@ -54,6 +54,107 @@ namespace SharpTables.Graph
             return new Graph<T>(data);
         }
 
+        /// <summary>
+        /// Sets the value getter for the graph
+        /// </summary>
+        /// <param name="valueGetter">The value getter function</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseValueGetter(Func<T, double> valueGetter)
+        {
+            Settings.ValueGetter = valueGetter;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the X tick formatting function for the graph
+        /// </summary>
+        /// <param name="xTickFormatter">The formatting function</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseXTickFormatter(Func<T, string> xTickFormatter)
+        {
+            Settings.XTickFormatter = xTickFormatter;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the Y tick formatting function for the graph
+        /// </summary>
+        /// <param name="yTickFormatter">The formatting function</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseYTickFormatter(Func<double, string> yTickFormatter)
+        {
+            Settings.YTickFormatter = yTickFormatter;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the Y axis padding (number of lines between ticks) for the graph. 
+        /// </summary>
+        /// <param name="yAxisPadding">The number of lines of padding</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseYAxisPadding(int yAxisPadding)
+        {
+            Settings.YAxisPadding = yAxisPadding;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the X axis padding (number of spaces between ticks) for the graph.
+        /// </summary>
+        /// <param name="xAxisPadding">The padding value</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseXAxisPadding(int xAxisPadding)
+        {
+            Settings.XAxisPadding = xAxisPadding;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the number of Y ticks for the graph
+        /// </summary>
+        /// <param name="numOfYTicks">The number of ticks in the Y axis</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseNumOfYTicks(int numOfYTicks)
+        {
+            Settings.NumOfYTicks = numOfYTicks;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the header for the graph
+        /// </summary>
+        /// <param name="header">The header text</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseHeader(string header)
+        {
+            Settings.Header = header;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the maximum value for the Y axis. Leave null for automatic sizing.
+        /// </summary>
+        /// <param name="maxValue">The value of the highest tick in the graph</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseMaxValue(double maxValue)
+        {
+            Settings.MaxValue = maxValue;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the minimum value for the Y axis. Leave null for automatic sizing.
+        /// </summary>
+        /// <param name="minValue">The value of the lowest tick in the graph</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseMinValue(double minValue)
+        {
+            Settings.MinValue = minValue;
+            return this;
+        }
+
+
+
         public PaginatedGraph<T> ToPaginatedGraph(int columnsPerPage)
         {
             var paginatedGraph = new PaginatedGraph<T>(Values);
