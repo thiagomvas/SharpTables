@@ -173,6 +173,9 @@ namespace SharpTables.Graph
             return paginatedGraph;
         }
 
+        /// <summary>
+        /// Writes the graph to the console
+        /// </summary>
         public void Write()
         {
             switch (Settings.Type)
@@ -192,9 +195,6 @@ namespace SharpTables.Graph
             }
         }
 
-        /// <summary>
-        /// Writes the graph to the console
-        /// </summary>
         private void WriteBar()
         {
             // Setup

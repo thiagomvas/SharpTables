@@ -52,6 +52,16 @@ namespace SharpTables
         }
 
         /// <summary>
+        /// Adds a row to the table.
+        /// </summary>
+        /// <param name="cells">The text in each cell for this row</param>
+        /// <returns>The table with changes applied</returns>
+        public Table AddRow(params string[] cells)
+        {
+            return AddRow(new Row(cells));
+        }
+
+        /// <summary>
         /// Sets the header of the table. 
         /// </summary>
         /// <param name="row">The row to add</param>
@@ -62,6 +72,17 @@ namespace SharpTables
             foreach (var cell in row.Cells)
                 cell.Padding = 0;
             return this;
+        }
+
+        /// <summary>
+        /// Sets the header of the table. 
+        /// </summary>
+        /// <param name="cells">The title for each row</param>
+        /// <returns>The table with changes applied</returns>
+        public Table SetHeader(params string[] cells)
+        {
+            var row = new Row(cells);
+            return SetHeader(row);
         }
 
         /// <summary>
