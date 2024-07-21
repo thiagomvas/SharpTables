@@ -45,6 +45,12 @@
         /// </summary>
         public char GraphIcon { get; set; } = '#';
 
+        /// <summary>
+        /// Gets or sets the character used to represent the graph line.
+        /// </summary>
+        /// <remarks>
+        /// Only used in Line Graphs
+        /// </remarks>
         public char GraphLine { get; set; } = '-';
 
         /// <summary>
