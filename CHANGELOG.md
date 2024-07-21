@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.0"></a>
+## [1.4.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.4.0) (2024-07-21)
+
+### Features
+
+* Add Line Graph and Scatter Graph support in GraphSettings ([e610bef](https://www.github.com/thiagomvas/SharpTables/commit/e610bef6e287f9a94496ca5fcf5bebb1f2d7d753))
+* Add Table.AddRow(params string[]) and Table.SetHeader(params string[]) overloads ([86d3ceb](https://www.github.com/thiagomvas/SharpTables/commit/86d3ceb282a14511268db7877eaa60e35da43a61))
+
 <a name="1.3.0"></a>
 ## [1.3.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.3.0) (2024-07-11)
 
