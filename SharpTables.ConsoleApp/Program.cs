@@ -1,34 +1,42 @@
-﻿using Bogus;
-using SharpTables;
+﻿
+using Bogus;
 using SharpTables.Graph;
 
-var foos = new Faker<Foo>()
-    .RuleFor(o => o.Name, f => f.Name.FirstName())
-    .RuleFor(o => o.Age, f => f.Random.Number(1, 100));
+var faker = new Faker<Foo>()
+    .RuleFor(f => f.Fizz, f => f.Random.Int(-100, 100))
+    .RuleFor(f => f.Buzz, f => f.Random.String2(3));
 
-var graph = new Graph<Foo>(foos.Generate(15));
+var data = faker.Generate(10);
 
-var settings = new GraphSettings<Foo>()
+var formatting = new GraphFormatting() with
 {
-    ValueGetter = x => x.Age,
-    XTickFormatter = x => x.Name,
-    YTickFormatter = y => y.ToString("0.0"),
-    YAxisPadding = 1,
-    XAxisPadding = 1,
-    NumOfYTicks = 5,
-    Header = "Ages",
-    MaxValue = 100,
-    MinValue = 0,
+    GraphLine = '*',
 };
 
-graph.Settings = settings;
-Console.WriteLine();
-graph.ToPaginatedGraph(5).PrintPage(2);
-Console.WriteLine();
+var graph = new Graph<Foo>(data)
+    .UseValueGetter(f => f.Fizz)
+    .UseXTickFormatter(f => f.Buzz)
+    .UseYTickFormatter(f => f.ToString("0"))
+    .UseMinValue(-100)
+    .UseMaxValue(100)
+    .UseFormatting(formatting)
+    .UseGraphType(GraphType.Bar)
+    .UseHeader("Bar Graph");
 
-Table.FromDataSet(graph.Values.OrderByDescending(f => f.Age)).Write();
-public class Foo
+graph.Write();
+Console.WriteLine("\n\n");
+
+graph.UseGraphType(GraphType.Line).UseHeader("Line Graph");
+graph.Write();
+Console.WriteLine("\n\n");
+
+graph.UseGraphType(GraphType.Scatter).UseHeader("Scatter Graph");
+graph.Write();
+Console.WriteLine("\n\n");
+
+
+class Foo
 {
-    public string Name { get; set; }
-    public int Age { get; set; }
+    public int Fizz { get; set; }
+    public string Buzz { get; set; }
 }

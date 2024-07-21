@@ -153,7 +153,16 @@ namespace SharpTables.Graph
             return this;
         }
 
-
+        /// <summary>
+        /// Sets the graph type
+        /// </summary>
+        /// <param name="type">The graph type</param>
+        /// <returns>The graph with changes applied</returns>
+        public Graph<T> UseGraphType(GraphType type)
+        {
+            Settings.Type = type;
+            return this;
+        }
 
         public PaginatedGraph<T> ToPaginatedGraph(int columnsPerPage)
         {
@@ -164,10 +173,29 @@ namespace SharpTables.Graph
             return paginatedGraph;
         }
 
+        public void Write()
+        {
+            switch (Settings.Type)
+            {
+                case GraphType.Bar:
+                    WriteBar();
+                    break;
+                case GraphType.Line:
+                    WriteLine();
+                    break;
+                case GraphType.Scatter:
+                    WriteScatter();
+                    break;
+                default:
+                    WriteBar();
+                    break;
+            }
+        }
+
         /// <summary>
         /// Writes the graph to the console
         /// </summary>
-        public void Write()
+        private void WriteBar()
         {
             // Setup
             var values = Values.Select(Settings.ValueGetter).ToList();
@@ -298,6 +326,357 @@ namespace SharpTables.Graph
             }
             Console.WriteLine();
             Console.ForegroundColor = Formatting.XAxisLabelColor;
+            // Draw X axis ticks
+            for (int x = 0; x < lineWidth;)
+            {
+                if (x == x0 - 1)
+                {
+                    Console.Write(Formatting.VerticalLine);
+                    x++;
+                    continue;
+                }
+                bool hasHit = false;
+                for (int i = 0; i < Values.Count; i++)
+                {
+                    if (numCenterCoords[i] == x)
+                    {
+                        Console.Write(Settings.XTickFormatter(Values[i]));
+                        x += Settings.XTickFormatter(Values[i]).Length;
+                        hasHit = true;
+                        break;
+                    }
+                }
+                if (!hasHit)
+                {
+                    Console.Write(' ');
+                    x++;
+                }
+            }
+            Console.ResetColor();
+        }
+        private void WriteLine()
+        {
+            // Setup
+            var values = Values.Select(Settings.ValueGetter).ToList();
+            var max = Settings.MaxValue ?? values.Max() * 1.1f;
+            var min = Settings.MinValue ?? values.Min() * 0.9f;
+            int yTickPadding = 2;
+            int xTickPadding = 2;
+
+            int maxStrlen = Settings.YTickFormatter(max).Length;
+            int minStrlen = Settings.YTickFormatter(min).Length;
+
+            int x0 = maxStrlen + yTickPadding + 1;
+            int y0 = Settings.NumOfYTicks * Settings.YAxisPadding;
+
+            int[] numCenterCoords = new int[Values.Count];
+            int[] numsOffset = new int[Values.Count];
+
+            // Get coordinates for numbers and offsets to position dots
+            for (int i = 0; i < Values.Count; i++)
+            {
+                numsOffset[i] = Settings.XTickFormatter(Values[i]).Length / 2;
+                if (i == 0)
+                {
+                    numCenterCoords[i] = x0 + 1;
+                }
+                else
+                {
+                    numCenterCoords[i] = numCenterCoords[i - 1] + Settings.XTickFormatter(Values[i - 1]).Length + xTickPadding + 1;
+                }
+            }
+
+            int lineCount = Settings.NumOfYTicks * (Settings.YAxisPadding + 1);
+            int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
+
+            // Print the header centered
+            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            Console.WriteLine(new string(' ', headerStart) + Settings.Header);
+
+            // Build the graph
+            for (int y = 0; y <= lineCount; y++)
+            {
+                double yVal = max - y * (max - min) / lineCount;
+                if (y == lineCount)
+                    yVal = min;
+
+                // Y ticks
+                if (y % (Settings.YAxisPadding + 1) == 0)
+                {
+                    Console.ForegroundColor = Formatting.YAxisLabelColor;
+                    Console.Write(Settings.YTickFormatter(yVal));
+                    Console.ForegroundColor = Formatting.YAxisColor;
+                    Console.Write(new string(Formatting.EmptyPoint, maxStrlen - Settings.YTickFormatter(yVal).Length + yTickPadding));
+                    Console.Write(Formatting.YAxisTick);
+                }
+                else
+                {
+                    Console.ForegroundColor = Formatting.YAxisColor;
+                    Console.Write(new string(Formatting.EmptyPoint, maxStrlen + yTickPadding));
+                    Console.Write(Formatting.VerticalLine);
+                }
+                Console.ResetColor();
+
+                // Dots and lines
+                bool[] isCharPrinted = new bool[lineWidth - x0 + 1];
+                for (int x = x0; x <= lineWidth; x++)
+                {
+                    bool hitDot = false;
+                    for (int i = 0; i < Values.Count; i++)
+                    {
+                        if (numCenterCoords[i] + numsOffset[i] == x)
+                        {
+                            if (Math.Abs(values[i] - yVal) < (max - min) / lineCount / 2)
+                            {
+                                if (!isCharPrinted[x - x0])
+                                {
+                                    Console.ForegroundColor = Formatting.GraphIconColor;
+                                    Console.Write(Formatting.GraphIcon);
+                                    Console.ResetColor();
+                                    isCharPrinted[x - x0] = true;
+                                }
+                                hitDot = true;
+                            }
+                        }
+                    }
+
+                    if (!hitDot)
+                    {
+                        bool drawLine = false;
+                        for (int i = 1; i < Values.Count; i++)
+                        {
+                            int xPrev = numCenterCoords[i - 1] + numsOffset[i - 1];
+                            int xCurr = numCenterCoords[i] + numsOffset[i];
+                            if (x > xPrev && x < xCurr)
+                            {
+                                double yPrev = values[i - 1];
+                                double yCurr = values[i];
+                                double yInterpolated = yPrev + (yCurr - yPrev) * (x - xPrev) / (xCurr - xPrev);
+                                if (Math.Abs(yVal - yInterpolated) < (max - min) / lineCount)
+                                {
+                                    if (!isCharPrinted[x - x0])
+                                    {
+                                        Console.ForegroundColor = Formatting.GraphIconColor;
+                                        Console.Write(Formatting.GraphLine);
+                                        Console.ResetColor();
+                                        isCharPrinted[x - x0] = true;
+                                    }
+                                    drawLine = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!drawLine && !isCharPrinted[x - x0])
+                        {
+                            if (y % (Settings.YAxisPadding + 1) == 0)
+                            {
+                                Console.ForegroundColor = Formatting.YAxisTickLineColor;
+                                Console.Write(Formatting.YAxisTickLine);
+                                Console.ResetColor();
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = Formatting.EmptyPointColor;
+                                Console.Write(Formatting.EmptyPoint);
+                                Console.ResetColor();
+                            }
+                            isCharPrinted[x - x0] = true;
+                        }
+                    }
+                }
+                Console.WriteLine();
+            }
+
+            // Draw X axis
+            lineCount++;
+            string xAxis = new string(Formatting.HorizontalLine, lineWidth);
+
+            // Put a "+" where the dots are
+            for (int i = 0; i < Values.Count; i++)
+            {
+                xAxis = xAxis.Remove(numCenterCoords[i] + numsOffset[i], 1);
+                xAxis = xAxis.Insert(numCenterCoords[i] + numsOffset[i], Formatting.XAxisTick.ToString());
+            }
+            xAxis = xAxis.Remove(x0 - 1, 1);
+            xAxis = xAxis.Insert(x0 - 1, Formatting.Origin.ToString());
+
+            Console.ForegroundColor = Formatting.XAxisColor;
+            foreach (char c in xAxis)
+            {
+                if (c == Formatting.XAxisTick)
+                {
+                    Console.ForegroundColor = Formatting.XAxisTickColor;
+                    Console.Write(c);
+                    Console.ForegroundColor = Formatting.XAxisColor;
+                }
+                else
+                {
+                    Console.Write(c);
+                }
+            }
+            Console.WriteLine();
+            Console.ForegroundColor = Formatting.XAxisLabelColor;
+
+            // Draw X axis ticks
+            for (int x = 0; x < lineWidth;)
+            {
+                if (x == x0 - 1)
+                {
+                    Console.Write(Formatting.VerticalLine);
+                    x++;
+                    continue;
+                }
+                bool hasHit = false;
+                for (int i = 0; i < Values.Count; i++)
+                {
+                    if (numCenterCoords[i] == x)
+                    {
+                        Console.Write(Settings.XTickFormatter(Values[i]));
+                        x += Settings.XTickFormatter(Values[i]).Length;
+                        hasHit = true;
+                        break;
+                    }
+                }
+                if (!hasHit)
+                {
+                    Console.Write(' ');
+                    x++;
+                }
+            }
+            Console.ResetColor();
+        }
+        private void WriteScatter()
+        {
+            // Setup
+            var values = Values.Select(Settings.ValueGetter).ToList();
+            var max = Settings.MaxValue ?? values.Max() * 1.1f;
+            var min = Settings.MinValue ?? values.Min() * 0.9f;
+            int yTickPadding = 2;
+            int xTickPadding = 2;
+
+            int maxStrlen = Settings.YTickFormatter(max).Length;
+            int minStrlen = Settings.YTickFormatter(min).Length;
+
+            int x0 = maxStrlen + yTickPadding + 1;
+            int y0 = Settings.NumOfYTicks * Settings.YAxisPadding;
+
+            int[] numCenterCoords = new int[Values.Count];
+            int[] numsOffset = new int[Values.Count];
+
+            // Get coordinates for numbers and offsets to position points
+            for (int i = 0; i < Values.Count; i++)
+            {
+                numsOffset[i] = Settings.XTickFormatter(Values[i]).Length / 2;
+                if (i == 0)
+                {
+                    numCenterCoords[i] = x0 + 1;
+                }
+                else
+                {
+                    numCenterCoords[i] = numCenterCoords[i - 1] + Settings.XTickFormatter(Values[i - 1]).Length + xTickPadding + 1;
+                }
+            }
+
+            int lineCount = Settings.NumOfYTicks * (Settings.YAxisPadding + 1);
+            int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
+
+            // Print the header centered
+            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            Console.WriteLine(new string(' ', headerStart) + Settings.Header);
+
+            // Build the graph
+            for (int y = 0; y <= lineCount; y++)
+            {
+                double yVal = max - y * (max - min) / lineCount;
+                if (y == lineCount)
+                    yVal = min;
+
+                // Y ticks
+                if (y % (Settings.YAxisPadding + 1) == 0)
+                {
+                    Console.ForegroundColor = Formatting.YAxisLabelColor;
+                    Console.Write(Settings.YTickFormatter(yVal));
+                    Console.ForegroundColor = Formatting.YAxisColor;
+                    Console.Write(new string(Formatting.EmptyPoint, maxStrlen - Settings.YTickFormatter(yVal).Length + yTickPadding));
+                    Console.Write(Formatting.YAxisTick);
+                }
+                else
+                {
+                    Console.ForegroundColor = Formatting.YAxisColor;
+                    Console.Write(new string(Formatting.EmptyPoint, maxStrlen + yTickPadding));
+                    Console.Write(Formatting.VerticalLine);
+                }
+                Console.ResetColor();
+
+                // Line graph points and lines
+                for (int x = x0; x <= lineWidth; x++)
+                {
+                    bool hitPoint = false;
+                    for (int i = 0; i < Values.Count; i++)
+                    {
+                        if (numCenterCoords[i] + numsOffset[i] == x)
+                        {
+                            if (Math.Abs(values[i] - yVal) < (max - min) / lineCount / 2)
+                            {
+                                Console.ForegroundColor = Formatting.GraphIconColor;
+                                Console.Write(Formatting.GraphIcon);
+                                Console.ResetColor();
+                                hitPoint = true;
+                            }
+                        }
+                    }
+
+                    if (!hitPoint)
+                    {
+                        if (y % (Settings.YAxisPadding + 1) == 0)
+                        {
+                            Console.ForegroundColor = Formatting.YAxisTickLineColor;
+                            Console.Write(Formatting.YAxisTickLine);
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = Formatting.EmptyPointColor;
+                            Console.Write(Formatting.EmptyPoint);
+                            Console.ResetColor();
+                        }
+                    }
+                    else
+                        hitPoint = false;
+                }
+                Console.WriteLine();
+            }
+
+            // Draw X axis
+            lineCount++;
+            string xAxis = new string(Formatting.HorizontalLine, lineWidth);
+
+            // Put a "+" where the points are
+            for (int i = 0; i < Values.Count; i++)
+            {
+                xAxis = xAxis.Remove(numCenterCoords[i] + numsOffset[i], 1);
+                xAxis = xAxis.Insert(numCenterCoords[i] + numsOffset[i], Formatting.XAxisTick.ToString());
+            }
+            xAxis = xAxis.Remove(x0 - 1, 1);
+            xAxis = xAxis.Insert(x0 - 1, Formatting.Origin.ToString());
+
+            Console.ForegroundColor = Formatting.XAxisColor;
+            foreach (char c in xAxis)
+            {
+                if (c == Formatting.XAxisTick)
+                {
+                    Console.ForegroundColor = Formatting.XAxisTickColor;
+                    Console.Write(c);
+                    Console.ForegroundColor = Formatting.XAxisColor;
+                }
+                else
+                {
+                    Console.Write(c);
+                }
+            }
+            Console.WriteLine();
+            Console.ForegroundColor = Formatting.XAxisLabelColor;
+
             // Draw X axis ticks
             for (int x = 0; x < lineWidth;)
             {

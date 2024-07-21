@@ -45,6 +45,8 @@
         /// </summary>
         public char GraphIcon { get; set; } = '#';
 
+        public char GraphLine { get; set; } = '-';
+
         /// <summary>
         /// Gets or sets the color of the y-axis.
         /// </summary>

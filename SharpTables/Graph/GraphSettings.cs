@@ -49,5 +49,10 @@
         /// Gets or sets the minimum value for the Y-axis. Leave null for automatic sizing.
         /// </summary>
         public double? MinValue { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the graph type. Default is <see cref="GraphType.Bar"/>.
+        /// </summary>
+        public GraphType Type { get; set; } = GraphType.Bar;
     }
 }
