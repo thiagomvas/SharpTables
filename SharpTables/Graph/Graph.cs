@@ -452,11 +452,11 @@ namespace SharpTables.Graph
                                 double yPrev = values[i - 1];
                                 double yCurr = values[i];
                                 double yInterpolated = yPrev + (yCurr - yPrev) * (x - xPrev) / (xCurr - xPrev);
-                                if (Math.Abs(yVal - yInterpolated) < (max - min) / lineCount)
+                                if (Math.Abs(yVal - yInterpolated) < (max - min) / lineCount / 2)
                                 {
                                     if (!isCharPrinted[x - x0])
                                     {
-                                        Console.ForegroundColor = Formatting.GraphIconColor;
+                                        Console.ForegroundColor = Formatting.GraphLineColor;
                                         Console.Write(Formatting.GraphLine);
                                         Console.ResetColor();
                                         isCharPrinted[x - x0] = true;
