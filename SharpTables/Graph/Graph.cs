@@ -710,12 +710,12 @@ namespace SharpTables.Graph
         }
         private void WritePie()
         {
-            if(Formatting is not PieGraphFormatting format)
+            if (Formatting is not PieGraphFormatting format)
             {
                 throw new InvalidOperationException("Formatting must be of type PieGraphFormatting to draw a pie graph.");
             }
 
-            
+
 
             // Pre-calculate the total and get the threshold
             double total = Values.Select(Settings.ValueGetter).Sum();
@@ -765,7 +765,7 @@ namespace SharpTables.Graph
             int radius = 10;
             var radiusSqr = radius * radius;
             float xScale = 2;
-            int fullwidth = (int) (radius * 2 * xScale + 1);
+            int fullwidth = (int)(radius * 2 * xScale + 1);
 
             // Print the header centered
             int headerStart = (fullwidth - Settings.Header.Length) / 2;
@@ -775,7 +775,7 @@ namespace SharpTables.Graph
             for (int y = 0; y < radius * 2 + 1; y++)
             {
                 var offsetYSqr = (int)Math.Pow(y - radius, 2);
-                for (int x = 0; x < fullwidth ; x++)
+                for (int x = 0; x < fullwidth; x++)
                 {
                     var offsetXSqr = (int)Math.Pow(x / xScale - radius, 2);
                     if (offsetXSqr + offsetYSqr <= radiusSqr)
@@ -797,7 +797,7 @@ namespace SharpTables.Graph
             }
 
             Console.ResetColor();
-            if(format.ShowLegend)
+            if (format.ShowLegend)
             {
                 // Draw the legend
                 Console.WriteLine(); // Add a blank line for spacing

@@ -93,7 +93,7 @@ while (true)
             return;
         case ConsoleKey.Q:
             Console.Clear();
-            Graphs.DrawOrderQuantityPieGraph(orders.Take(10)); 
+            Graphs.DrawOrderQuantityPieGraph(orders.Take(10));
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             break;
