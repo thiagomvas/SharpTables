@@ -18,6 +18,14 @@
         /// <summary>
         /// Scatter graph type.
         /// </summary>
-        Scatter
+        Scatter,
+
+        /// <summary>
+        /// Pie graph type.
+        /// </summary>
+        /// <remarks>
+        /// Use this with a <see cref="PieGraphFormatting"/> object for formatting.
+        /// </remarks>
+        Pie
     }
 }
