@@ -1,42 +1,56 @@
-﻿
-using Bogus;
-using SharpTables.Graph;
+﻿using SharpTables.Graph;
 
-var faker = new Faker<Foo>()
-    .RuleFor(f => f.Fizz, f => f.Random.Int(-100, 100))
-    .RuleFor(f => f.Buzz, f => f.Random.String2(3));
 
-var data = faker.Generate(10);
-
-var formatting = new GraphFormatting() with
+var data = new List<Foo>
 {
-    GraphLine = '*',
+    new Foo { Label = "A", Value = 50 },
+    new Foo { Label = "B", Value = 30 },
+    new Foo { Label = "C", Value = 20 },
+    new Foo { Label = "D", Value = 40 },
+    new Foo { Label = "E", Value = 10 },
 };
 
-var graph = new Graph<Foo>(data)
-    .UseValueGetter(f => f.Fizz)
-    .UseXTickFormatter(f => f.Buzz)
-    .UseYTickFormatter(f => f.ToString("0"))
-    .UseMinValue(-100)
-    .UseMaxValue(100)
-    .UseFormatting(formatting)
-    .UseGraphType(GraphType.Bar)
-    .UseHeader("Bar Graph");
+var settings = new GraphSettings<Foo>
+{
+    ValueGetter = x => x.Value,
+    XTickFormatter = x => x.Label,
+    YTickFormatter = y => y.ToString(),
+    YAxisPadding = 1,
+    XAxisPadding = 1,
+    NumOfYTicks = 5,
+    Header = "My Graph",
+    MaxValue = 60,
+    MinValue = 0,
+    Type = GraphType.Pie
+};
 
-graph.Write();
-Console.WriteLine("\n\n");
+var formatting = new PieGraphFormatting
+{
+    Radius = 10,
+    GroupThreshold = 0.05,
+    EmptyPoint = '.',
+    GraphLine = '*',
+    GraphIcon = '@'
+};
 
-graph.UseGraphType(GraphType.Line).UseHeader("Line Graph");
-graph.Write();
-Console.WriteLine("\n\n");
+var g = new Graph<Foo>(data)
+    .UseSettings(settings)
+    .UseFormatting(formatting);
 
-graph.UseGraphType(GraphType.Scatter).UseHeader("Scatter Graph");
-graph.Write();
-Console.WriteLine("\n\n");
+g.Write();
+Console.WriteLine();
 
+settings.Type = GraphType.Bar;
+g.Write();
+Console.WriteLine();
 
+settings.Type = GraphType.Line;
+g.Write();
+Console.WriteLine();
+
+Console.ResetColor();
 class Foo
 {
-    public int Fizz { get; set; }
-    public string Buzz { get; set; }
+    public string Label { get; set; }
+    public double Value { get; set; }
 }

@@ -3,11 +3,22 @@ using SharpTables;
 using SharpTables.Examples;
 using SharpTables.Pagination;
 
+var date = DateTime.Today;
+
+var priceHistory = new Order[]
+{
+    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+};
+
 // Using bogus to generate fake data
 var orders = new Faker<Order>()
     .RuleFor(o => o.Id, f => f.Random.Guid())
     .RuleFor(o => o.Item, f => f.Commerce.Product())
-    .RuleFor(o => o.Quantity, f => f.Random.Number(1, 10))
+    .RuleFor(o => o.Quantity, f => f.Random.Number(1, 1000))
     .RuleFor(o => o.Price, f => f.Random.Double(1, 100))
     .RuleFor(o => o.Producer, f => f.Company.CompanyName().OrNull(f, 0.1f)) // Generate a few nullables
     .Generate(100);
@@ -66,7 +77,7 @@ while (true)
     Console.Clear();
     paginatedTable.PrintCurrent();
     Console.WriteLine($"Page {paginatedTable.CurrentPageIndex + 1} of {paginatedTable.TotalPages}");
-    Console.WriteLine("[<-] Previous Page | [->] Next Page | [S] Write as string | [H] Write as HTML | [M] Write as Markdown | [F] Print full table | [ESC] Exit");
+    Console.WriteLine("[<-] Previous Page | [->] Next Page | [ESC] Exit | [Q] Order Quanity Graph (10 first products) | [H] Price History Graph ");
 
 
     var key = Console.ReadKey().Key;
@@ -80,29 +91,19 @@ while (true)
             break;
         case ConsoleKey.Escape:
             return;
-        case ConsoleKey.S:
+        case ConsoleKey.Q:
             Console.Clear();
-            Console.WriteLine(paginatedTable.Current.ToString()); // Writes the table as a string
+            Graphs.DrawOrderQuantityPieGraph(orders.Take(10)); 
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             break;
         case ConsoleKey.H:
             Console.Clear();
-            Console.WriteLine(paginatedTable.Current.ToHtml()); // Writes the table as HTML
+            Graphs.DrawPriceHistoryLineGraph(priceHistory);
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             break;
-        case ConsoleKey.M:
-            Console.Clear();
-            Console.WriteLine(paginatedTable.Current.ToMarkdown()); // Writes the table as Markdown
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
-            break;
-        case ConsoleKey.F:
-            Console.Clear();
-            table.Write(); // Prints the original table, before pagination
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+        default:
             break;
     }
 }
