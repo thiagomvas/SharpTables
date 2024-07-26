@@ -4,14 +4,21 @@ using SharpTables.Examples;
 using SharpTables.Pagination;
 
 var date = DateTime.Today;
+var dates = new DateTime[5];
+dates[0] = date;
+for(int i = 1; i < dates.Length; i++)
+{
+    dates[i] = dates[i - 1].AddDays(Random.Shared.Next(10, 100));
+}
+
 
 var priceHistory = new Order[]
 {
-    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
-    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
-    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
-    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
-    new() { Id = Guid.NewGuid(), Item = date.AddDays(Random.Shared.Next(1, 10)).ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = dates[0].ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = dates[1].ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = dates[2].ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = dates[3].ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
+    new() { Id = Guid.NewGuid(), Item = dates[4].ToShortDateString(), Producer = "Apple Inc.", Quantity = 1, Price = Random.Shared.NextSingle() * 5 },
 };
 
 // Using bogus to generate fake data
