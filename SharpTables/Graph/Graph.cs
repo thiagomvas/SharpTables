@@ -234,7 +234,7 @@ namespace SharpTables.Graph
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
             // Print the header centered
-            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((lineWidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
@@ -393,7 +393,7 @@ namespace SharpTables.Graph
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
             // Print the header centered
-            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((lineWidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
@@ -584,7 +584,7 @@ namespace SharpTables.Graph
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
             // Print the header centered
-            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((lineWidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
@@ -762,13 +762,13 @@ namespace SharpTables.Graph
             double[] percentages = values.Values.ToArray();
 
             ConsoleColor[] colors = format.Colors;
-            int radius = 10;
+            int radius = format.Radius;
             var radiusSqr = radius * radius;
             float xScale = 2;
             int fullwidth = (int)(radius * 2 * xScale + 1);
 
             // Print the header centered
-            int headerStart = (fullwidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((fullwidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Draw the pie chart
