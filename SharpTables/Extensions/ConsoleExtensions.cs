@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using SharpTables.Graph;
+using System.Xml;
 
 namespace SharpTables.Extensions
 {
@@ -45,5 +46,67 @@ namespace SharpTables.Extensions
                 .UseFormatting(formatting);
             t.Write(writer);
         }
+
+        public static void Graph<T>(this TextWriter writer, IEnumerable<T> data)
+        {
+            var g = new Graph<T>(data);
+            g.Write();
+        }
+
+        public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type)
+        {
+            var g = new Graph<T>(data)
+                .UseGraphType(type);
+            if (type == GraphType.Pie)
+            {
+                g.UseFormatting(new PieGraphFormatting());
+            }
+            
+            g.Write();
+            
+        }
+
+        public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type, GraphSettings<T> settings)
+        {
+            var g = new Graph<T>(data)
+                .UseGraphType(type)
+                .UseSettings(settings);
+            if (type == GraphType.Pie)
+            {
+                g.UseFormatting(new PieGraphFormatting());
+            }
+            
+            g.Write();
+        }
+
+        public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type, GraphFormatting formatting)
+        {
+            var g = new Graph<T>(data)
+                .UseGraphType(type)
+                .UseFormatting(formatting);
+
+            g.Write();
+        }
+
+        public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type, GraphFormatting formatting, GraphSettings<T> settings)
+        {
+            var g = new Graph<T>(data)
+                .UseGraphType(type)
+                .UseFormatting(formatting)
+                .UseSettings(settings);
+
+            g.Write();
+        }
+
+        public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type, GraphSettings<T> settings, GraphFormatting formatting)
+        {
+            var g = new Graph<T>(data)
+                .UseGraphType(type)
+                .UseFormatting(formatting)
+                .UseSettings(settings);
+
+            g.Write();
+        }
+
     }
 }
