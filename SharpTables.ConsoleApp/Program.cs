@@ -1,56 +1,28 @@
-﻿using SharpTables.Graph;
+﻿using SharpTables;
+using SharpTables.Annotations;
+using SharpTables.Extensions;
 
-
-var data = new List<Foo>
+var foos = new List<Foo>
 {
-    new Foo { Label = "A", Value = 50 },
-    new Foo { Label = "B", Value = 30 },
-    new Foo { Label = "C", Value = 20 },
-    new Foo { Label = "D", Value = 40 },
-    new Foo { Label = "E", Value = 10 },
+    new Foo { Id = 1, FirstName = "John" },
+    new Foo { Id = 2, FirstName = "Jane" },
+    new Foo { Id = 3, FirstName = "Joe" },
+    new Foo { Id = 4, FirstName = "Jill" }
 };
 
-var settings = new GraphSettings<Foo>
+Console.Out.Table(foos, TableFormatting.Minimalist, new TableSettings() { DisplayRowCount = true});
+
+public class Foo
 {
-    ValueGetter = x => x.Value,
-    XTickFormatter = x => x.Label,
-    YTickFormatter = y => y.ToString(),
-    YAxisPadding = 1,
-    XAxisPadding = 1,
-    NumOfYTicks = 5,
-    Header = "My Graph",
-    MaxValue = 60,
-    MinValue = 0,
-    Type = GraphType.Pie
-};
+    [TableOrder(0)]
+    [TableColor(ConsoleColor.Red)]
+    public int Id { get; set; }
 
-var formatting = new PieGraphFormatting
-{
-    Radius = 10,
-    GroupThreshold = 0.05,
-    EmptyPoint = '.',
-    GraphLine = '*',
-    GraphIcon = '@'
-};
+    [TableDisplayName("Name")]
+    [TableOrder(1)]
+    [GraphKey]
+    public string FirstName { get; set; }
 
-var g = new Graph<Foo>(data)
-    .UseSettings(settings)
-    .UseFormatting(formatting);
-
-g.Write();
-Console.WriteLine();
-
-settings.Type = GraphType.Bar;
-g.Write();
-Console.WriteLine();
-
-settings.Type = GraphType.Line;
-g.Write();
-Console.WriteLine();
-
-Console.ResetColor();
-class Foo
-{
-    public string Label { get; set; }
-    public double Value { get; set; }
+    [GraphValue]
+    public int Wins { get; set; }
 }
