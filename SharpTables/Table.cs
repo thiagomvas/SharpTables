@@ -407,6 +407,10 @@ namespace SharpTables
                 Console.WriteLine($"Row count: {rows.Count}");
         }
 
+        /// <summary>
+        /// Prints the table to the specified text writer.
+        /// </summary>
+        /// <param name="writer">The writer used to write the table</param>
         public void Write(TextWriter writer)
         {
             var rows = Rows.Select(r => r.Clone()).ToList();
