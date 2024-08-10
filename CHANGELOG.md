@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.5.0"></a>
+## [1.5.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.5.0) (2024-08-10)
+
+### Features
+
+* Add a new formatting class specifically for pie graphs ([b57e262](https://www.github.com/thiagomvas/SharpTables/commit/b57e262c3d853e7897cd65b0d6d6bf2bb2fc41b1))
+* Add Console.Out.Graph() extension methods ([2c0ff18](https://www.github.com/thiagomvas/SharpTables/commit/2c0ff1838abb7a4649d0a993aa20f44151d700ef))
+* Add Console.Out.Table() extension methods ([e0fcb9a](https://www.github.com/thiagomvas/SharpTables/commit/e0fcb9a6b580d7751ce0b3892a926bfc68267931))
+* Add Graph Line Color customization ([5847e8b](https://www.github.com/thiagomvas/SharpTables/commit/5847e8bf8a67d6b090726e7053c56633e3ddfe6f))
+* Add GraphKeyAttribute and GraphValueAttribute ([e524e8a](https://www.github.com/thiagomvas/SharpTables/commit/e524e8a829c5bd4e9d6e7210e9a74954b3c546e1))
+* Add Pie Graphs ([3675fe5](https://www.github.com/thiagomvas/SharpTables/commit/3675fe5044d4949dcc5b3567d883392a35bbec5c))
+* Add struct support for auto-generated tables. Tables for structs will use fields by default. ([1d9ad88](https://www.github.com/thiagomvas/SharpTables/commit/1d9ad880d1c02846e7e57f5f119f2573e7e5093e))
+* Add Table.Write(TextWritter writter) overload ([583ecce](https://www.github.com/thiagomvas/SharpTables/commit/583ecce3c66b28a71e5865e54a73b6867cd8353f))
+* Improved default value getters and formatters to use new attributes ([c56d492](https://www.github.com/thiagomvas/SharpTables/commit/c56d4923a02dcc86a1920049cc5dab183eb0666f))
+* Improved example project ([aa7ff88](https://www.github.com/thiagomvas/SharpTables/commit/aa7ff8839b1222aff7189d66e8733ee7283a6eb2))
+
+### Bug Fixes
+
+* Graphs no longer crash if header is wider than graph itself ([1c2cc8e](https://www.github.com/thiagomvas/SharpTables/commit/1c2cc8ec7e8a94b3632904b92a1890057dae42c2))
+* Improve graph lines ([7f70839](https://www.github.com/thiagomvas/SharpTables/commit/7f70839e827d8ae709ed1390a3bc8b3640ef6c90))
+
 <a name="1.4.0"></a>
 ## [1.4.0](https://www.github.com/thiagomvas/SharpTables/releases/tag/v1.4.0) (2024-07-21)
 
