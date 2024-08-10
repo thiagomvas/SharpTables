@@ -200,28 +200,47 @@ namespace SharpTables
         }
 
         /// <summary>
-        /// Creates a table from a collection using the properties of the type.
+        /// Creates a table from a collection using the properties/fields of the type.
         /// </summary>
         /// <typeparam name="T">The data type</typeparam>
         /// <param name="data">The data set</param>
         /// <returns>A table containing all the property values of the dataset</returns>
         /// <remarks>
         /// Only public instance properties without a <see cref="TableIgnoreAttribute"/> will be added to the table.
+        /// <br></br>
+        /// If the type is a value type, the fields will be used instead of properties.
         /// </remarks>
         public static Table FromDataSet<T>(IEnumerable<T> data)
         {
-            PropertyInfo[] properties = TableHelper.GetProperties(typeof(T));
             Table table = new Table();
-
-            string[] headerTitles = new string[properties.Length];
-            // Check for DisplayName annotation
-            for (int i = 0; i < properties.Length; i++)
+            if (typeof(T).IsValueType)
             {
-                TableDisplayNameAttribute? attribute = properties[i].GetCustomAttribute<TableDisplayNameAttribute>();
-                headerTitles[i] = attribute?.Name ?? properties[i].Name;
-            }
+                FieldInfo[] fields = TableHelper.GetFields(typeof(T));
 
-            table.SetHeader(new Row(headerTitles));
+                string[] headerTitles = new string[fields.Length];
+                // Check for DisplayName annotation
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    TableDisplayNameAttribute? attribute = fields[i].GetCustomAttribute<TableDisplayNameAttribute>();
+                    headerTitles[i] = attribute?.Name ?? fields[i].Name;
+                }
+
+                table.SetHeader(new Row(headerTitles));
+            }
+            else
+            {
+                PropertyInfo[] properties = TableHelper.GetProperties(typeof(T));
+
+                string[] headerTitles = new string[properties.Length];
+                // Check for DisplayName annotation
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    TableDisplayNameAttribute? attribute = properties[i].GetCustomAttribute<TableDisplayNameAttribute>();
+                    headerTitles[i] = attribute?.Name ?? properties[i].Name;
+                }
+
+                table.SetHeader(new Row(headerTitles));
+            }
 
             TableHelper.AddTDataset(table, data);
 

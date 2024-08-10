@@ -12,6 +12,14 @@ namespace SharpTables
                 .OrderBy(p => GetOrder(p))
                 .ToArray();
         }
+
+        public static FieldInfo[] GetFields(Type type)
+        {
+            return type.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Where(f => f.GetCustomAttribute<TableIgnoreAttribute>() is null)
+                .OrderBy(f => GetOrder(f))
+                .ToArray();
+        }
         // Order by whether or not the TableOrderAttribute is present
         public static int GetOrder(PropertyInfo property)
         {
@@ -19,25 +27,55 @@ namespace SharpTables
             return orderAttribute?.Order ?? int.MaxValue;
         }
 
+        public static int GetOrder(FieldInfo field)
+        {
+            var orderAttribute = field.GetCustomAttribute<Annotations.TableOrderAttribute>();
+            return orderAttribute?.Order ?? int.MaxValue;
+        }
+
         public static void AddTDataset<T>(Table target, IEnumerable<T> data)
         {
-            PropertyInfo[] properties = GetProperties(typeof(T));
-
-            // Add the data to the table
-            foreach (T item in data)
+            if(typeof(T).IsValueType)
             {
-                var row = new Row();
-                for (int i = 0; i < properties.Length; i++)
+                FieldInfo[] fields = GetFields(typeof(T));
+
+                // Add the data to the table
+                foreach (T item in data)
                 {
-                    var value = properties[i].GetValue(item);
-                    var cell = new Cell(value)
+                    var row = new Row();
+                    for (int i = 0; i < fields.Length; i++)
                     {
-                        Alignment = properties[i].GetCustomAttribute<TableAlignmentAttribute>()?.Alignment ?? Alignment.Left,
-                        Color = properties[i].GetCustomAttribute<TableColorAttribute>()?.Color ?? ConsoleColor.White
-                    };
-                    row.Cells.Add(cell);
+                        var value = fields[i].GetValue(item);
+                        var cell = new Cell(value)
+                        {
+                            Alignment = fields[i].GetCustomAttribute<TableAlignmentAttribute>()?.Alignment ?? Alignment.Left,
+                            Color = fields[i].GetCustomAttribute<TableColorAttribute>()?.Color ?? ConsoleColor.White
+                        };
+                        row.Cells.Add(cell);
+                    }
+                    target.AddRow(row);
                 }
-                target.AddRow(row);
+            }
+            else
+            {
+                PropertyInfo[] properties = GetProperties(typeof(T));
+
+                // Add the data to the table
+                foreach (T item in data)
+                {
+                    var row = new Row();
+                    for (int i = 0; i < properties.Length; i++)
+                    {
+                        var value = properties[i].GetValue(item);
+                        var cell = new Cell(value)
+                        {
+                            Alignment = properties[i].GetCustomAttribute<TableAlignmentAttribute>()?.Alignment ?? Alignment.Left,
+                            Color = properties[i].GetCustomAttribute<TableColorAttribute>()?.Color ?? ConsoleColor.White
+                        };
+                        row.Cells.Add(cell);
+                    }
+                    target.AddRow(row);
+                }
             }
         }
 

@@ -10,19 +10,19 @@ var foos = new List<Foo>
     new Foo { Id = 4, FirstName = "Jill", Wins = 3 }
 };
 
-Console.Out.Graph(foos, SharpTables.Graph.GraphType.Pie);
+Console.Out.Table(foos);
 
-public class Foo
+public struct Foo
 {
     [TableOrder(0)]
     [TableColor(ConsoleColor.Red)]
-    public int Id { get; set; }
+    public int Id;
 
     [TableDisplayName("Name")]
     [TableOrder(1)]
     [GraphKey]
-    public string FirstName { get; set; }
+    public string FirstName;
 
     [GraphValue]
-    public int Wins { get; set; }
+    public int Wins;
 }

@@ -1,4 +1,5 @@
-﻿using SharpTables.Graph;
+﻿using SharpTables.Annotations;
+using SharpTables.Graph;
 
 namespace SharpTables.Extensions
 {
@@ -105,6 +106,7 @@ namespace SharpTables.Extensions
         /// <param name="writer">The text writer.</param>
         /// <param name="data">The data to write.</param>
         /// <param name="type">The graph type.</param>
+        /// <remarks>This will only work if the class is annotated with <see cref="GraphKeyAttribute"/> and <see cref="GraphValueAttribute"/></remarks>
         public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type)
         {
             var g = new Graph<T>(data)
@@ -147,6 +149,7 @@ namespace SharpTables.Extensions
         /// <param name="data">The data to write.</param>
         /// <param name="type">The graph type.</param>
         /// <param name="formatting">The graph formatting.</param>
+        /// <remarks>This will only work if the class is annotated with <see cref="GraphKeyAttribute"/> and <see cref="GraphValueAttribute"/></remarks>
         public static void Graph<T>(this TextWriter writer, IEnumerable<T> data, GraphType type, GraphFormatting formatting)
         {
             var g = new Graph<T>(data)
