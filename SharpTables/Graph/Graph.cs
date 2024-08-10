@@ -189,6 +189,9 @@ namespace SharpTables.Graph
                 case GraphType.Scatter:
                     WriteScatter();
                     break;
+                case GraphType.Pie:
+                    WritePie();
+                    break;
                 default:
                     WriteBar();
                     break;
@@ -231,7 +234,7 @@ namespace SharpTables.Graph
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
             // Print the header centered
-            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((lineWidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
@@ -390,7 +393,7 @@ namespace SharpTables.Graph
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
             // Print the header centered
-            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((lineWidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
@@ -452,11 +455,11 @@ namespace SharpTables.Graph
                                 double yPrev = values[i - 1];
                                 double yCurr = values[i];
                                 double yInterpolated = yPrev + (yCurr - yPrev) * (x - xPrev) / (xCurr - xPrev);
-                                if (Math.Abs(yVal - yInterpolated) < (max - min) / lineCount)
+                                if (Math.Abs(yVal - yInterpolated) < (max - min) / lineCount / 2)
                                 {
                                     if (!isCharPrinted[x - x0])
                                     {
-                                        Console.ForegroundColor = Formatting.GraphIconColor;
+                                        Console.ForegroundColor = Formatting.GraphLineColor;
                                         Console.Write(Formatting.GraphLine);
                                         Console.ResetColor();
                                         isCharPrinted[x - x0] = true;
@@ -581,7 +584,7 @@ namespace SharpTables.Graph
             int lineWidth = numCenterCoords[Values.Count - 1] + Settings.XTickFormatter(Values[Values.Count - 1]).Length + xTickPadding + 1;
 
             // Print the header centered
-            int headerStart = (lineWidth - Settings.Header.Length) / 2;
+            int headerStart = Math.Max((lineWidth - Settings.Header.Length) / 2, 0);
             Console.WriteLine(new string(' ', headerStart) + Settings.Header);
 
             // Build the graph
@@ -705,6 +708,114 @@ namespace SharpTables.Graph
             }
             Console.ResetColor();
         }
+        private void WritePie()
+        {
+            if (Formatting is not PieGraphFormatting format)
+            {
+                throw new InvalidOperationException("Formatting must be of type PieGraphFormatting to draw a pie graph.");
+            }
+
+
+
+            // Pre-calculate the total and get the threshold
+            double total = Values.Select(Settings.ValueGetter).Sum();
+            double threshold = format.GroupThreshold;
+
+            // Variables to track "other" groups
+            bool hasOther = false;
+            int countBelowThreshold = 0;
+
+            // Dictionary to store the final values and "other" percentage
+            Dictionary<string, double> values = new();
+            List<string> others = new();
+            double otherPercentage = 0;
+
+            // Iterate over values once to calculate both "other" groups and percentages
+            foreach (var item in Values)
+            {
+                string key = Settings.XTickFormatter(item);
+                double value = Settings.ValueGetter(item) / total;
+
+                if (value < threshold)
+                {
+                    countBelowThreshold++;
+                    otherPercentage += value;
+                    others.Add(key);
+                    if (countBelowThreshold >= 2)
+                    {
+                        hasOther = true;
+                    }
+                }
+                else
+                {
+                    values[key] = value;
+                }
+            }
+
+            // Add "Other" category if necessary
+            if (hasOther)
+            {
+                values[$"Other ({string.Join(',', others)})"] = otherPercentage;
+            }
+
+            // Calculate percentages
+            double[] percentages = values.Values.ToArray();
+
+            ConsoleColor[] colors = format.Colors;
+            int radius = format.Radius;
+            var radiusSqr = radius * radius;
+            float xScale = 2;
+            int fullwidth = (int)(radius * 2 * xScale + 1);
+
+            // Print the header centered
+            int headerStart = Math.Max((fullwidth - Settings.Header.Length) / 2, 0);
+            Console.WriteLine(new string(' ', headerStart) + Settings.Header);
+
+            // Draw the pie chart
+            for (int y = 0; y < radius * 2 + 1; y++)
+            {
+                var offsetYSqr = (int)Math.Pow(y - radius, 2);
+                for (int x = 0; x < fullwidth; x++)
+                {
+                    var offsetXSqr = (int)Math.Pow(x / xScale - radius, 2);
+                    if (offsetXSqr + offsetYSqr <= radiusSqr)
+                    {
+                        int regionIndex = GetRegionIndex(x, y, radius, xScale, percentages);
+                        Console.ForegroundColor = colors[regionIndex % colors.Length];
+                        if (x - radius == fullwidth / xScale && y == radius)
+                            Console.Write(format.CenterChar);
+                        else
+                            Console.Write(format.GraphIcon);
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = format.EmptyPointColor;
+                        Console.Write(format.EmptyPoint);
+                    }
+                }
+                Console.WriteLine();
+            }
+
+            Console.ResetColor();
+            if (format.ShowLegend)
+            {
+                // Draw the legend
+                Console.WriteLine(); // Add a blank line for spacing
+                for (int i = 0; i < values.Count; i++)
+                {
+                    var label = values.ElementAt(i).Key;
+                    var percentage = values.ElementAt(i).Value;
+
+
+                    Console.ForegroundColor = colors[i % colors.Length];
+                    Console.Write($"{format.GraphIcon} {label} ({(percentage * 100).ToString("0.00")}%)");
+                    Console.WriteLine();
+                }
+            }
+
+            Console.ResetColor();
+        }
+
 
         /// <summary>
         /// Returns the graph as a string
@@ -845,6 +956,29 @@ namespace SharpTables.Graph
             }
 
             return sb.ToString();
+        }
+
+        private int GetRegionIndex(int x, int y, int radius, float xScale, double[] percentages)
+        {
+            double angle = Math.Atan2(y - radius, (x / xScale) - radius);
+            if (angle < 0)
+            {
+                angle += 2 * Math.PI;
+            }
+
+
+            double cumulativePercentage = 0.0;
+            for (int i = 0; i < percentages.Length; i++)
+            {
+                cumulativePercentage += percentages[i];
+                if (angle < cumulativePercentage * 2 * Math.PI)
+                {
+                    return i;
+                }
+            }
+
+            // Default to last region if not found (shouldn't happen if percentages sum to 1)
+            return percentages.Length - 1;
         }
     }
 }

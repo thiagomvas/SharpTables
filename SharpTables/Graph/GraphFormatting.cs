@@ -67,6 +67,7 @@
         /// Gets or sets the color of the graph icon.
         /// </summary>
         public ConsoleColor GraphIconColor { get; set; } = ConsoleColor.Yellow;
+        public ConsoleColor GraphLineColor { get; set; } = ConsoleColor.DarkYellow;
 
         /// <summary>
         /// Gets or sets the color of an empty point on the graph.

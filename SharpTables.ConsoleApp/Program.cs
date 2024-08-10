@@ -1,42 +1,27 @@
-﻿
-using Bogus;
-using SharpTables.Graph;
+﻿using SharpTables.Annotations;
+using SharpTables.Extensions;
 
-var faker = new Faker<Foo>()
-    .RuleFor(f => f.Fizz, f => f.Random.Int(-100, 100))
-    .RuleFor(f => f.Buzz, f => f.Random.String2(3));
-
-var data = faker.Generate(10);
-
-var formatting = new GraphFormatting() with
+var foos = new List<Foo>
 {
-    GraphLine = '*',
+    new Foo { Id = 1, FirstName = "John", Wins = 2 },
+    new Foo { Id = 2, FirstName = "Jane", Wins = 9 },
+    new Foo { Id = 3, FirstName = "Joe", Wins = 4 },
+    new Foo { Id = 4, FirstName = "Jill", Wins = 3 }
 };
 
-var graph = new Graph<Foo>(data)
-    .UseValueGetter(f => f.Fizz)
-    .UseXTickFormatter(f => f.Buzz)
-    .UseYTickFormatter(f => f.ToString("0"))
-    .UseMinValue(-100)
-    .UseMaxValue(100)
-    .UseFormatting(formatting)
-    .UseGraphType(GraphType.Bar)
-    .UseHeader("Bar Graph");
+Console.Out.Table(foos);
 
-graph.Write();
-Console.WriteLine("\n\n");
-
-graph.UseGraphType(GraphType.Line).UseHeader("Line Graph");
-graph.Write();
-Console.WriteLine("\n\n");
-
-graph.UseGraphType(GraphType.Scatter).UseHeader("Scatter Graph");
-graph.Write();
-Console.WriteLine("\n\n");
-
-
-class Foo
+public struct Foo
 {
-    public int Fizz { get; set; }
-    public string Buzz { get; set; }
+    [TableOrder(0)]
+    [TableColor(ConsoleColor.Red)]
+    public int Id;
+
+    [TableDisplayName("Name")]
+    [TableOrder(1)]
+    [GraphKey]
+    public string FirstName;
+
+    [GraphValue]
+    public int Wins;
 }

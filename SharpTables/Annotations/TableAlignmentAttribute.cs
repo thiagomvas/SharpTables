@@ -3,7 +3,7 @@
     /// <summary>
     /// Indicates that the column should be displayed with the specified alignment in the table.
     /// </summary>
-    [System.AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class TableAlignmentAttribute : Attribute
     {
         readonly Alignment _alignment;

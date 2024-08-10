@@ -3,7 +3,7 @@
     /// <summary>
     /// Indicates that the column header should be displayed as the specified name in the table.
     /// </summary>
-    [System.AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class TableDisplayNameAttribute : Attribute
     {
         readonly string _name;

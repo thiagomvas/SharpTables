@@ -1,4 +1,7 @@
-﻿namespace SharpTables.Graph
+﻿using SharpTables.Annotations;
+using System.Reflection;
+
+namespace SharpTables.Graph
 {
     /// <summary>
     /// Represents the settings for a graph.
@@ -9,17 +12,32 @@
         /// <summary>
         /// Gets or sets the function to retrieve the value from the data.
         /// </summary>
-        public Func<T, double> ValueGetter { get; set; } = x => (double)(object)x;
+        public Func<T, double> ValueGetter { get; set; } = x =>
+        {
+            return Convert.ToDouble(x.GetType().GetProperties()
+            .Where(p => p.GetCustomAttribute<GraphValueAttribute>() != null)
+            .FirstOrDefault()?
+            .GetValue(x) ?? 0);
+        };
 
         /// <summary>
         /// Gets or sets the function to format the X-axis tick labels.
         /// </summary>
-        public Func<T, string> XTickFormatter { get; set; } = x => x.ToString();
+        public Func<T, string> XTickFormatter { get; set; } = x =>
+        {
+            var key = x.GetType().GetProperties()
+            .Where(p => p.GetCustomAttribute<GraphKeyAttribute>() != null)
+            .FirstOrDefault();
+
+            if (key != null)
+                return key.GetValue(x).ToString();
+            else return x.ToString();
+        };
 
         /// <summary>
         /// Gets or sets the function to format the Y-axis tick labels.
         /// </summary>
-        public Func<double, string> YTickFormatter { get; set; } = y => y.ToString();
+        public Func<double, string> YTickFormatter { get; set; } = y => y.ToString("0.00");
 
         /// <summary>
         /// Gets or sets the padding for the Y-axis.
