@@ -285,6 +285,8 @@ namespace SharpTables
         /// <returns>A table containing all the property values of the dataset</returns>
         /// <remarks>
         /// Only public instance properties without a <see cref="TableIgnoreAttribute"/> will be added to the table.
+        /// <br></br>
+        /// If the type is a value type, the fields will be used instead of properties.
         /// </remarks>
         public Table AddDataSet<T>(IEnumerable<T> data)
         {

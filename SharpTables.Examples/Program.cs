@@ -6,7 +6,7 @@ using SharpTables.Pagination;
 var date = DateTime.Today;
 var dates = new DateTime[5];
 dates[0] = date;
-for(int i = 1; i < dates.Length; i++)
+for (int i = 1; i < dates.Length; i++)
 {
     dates[i] = dates[i - 1].AddDays(Random.Shared.Next(10, 100));
 }

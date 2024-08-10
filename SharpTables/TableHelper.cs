@@ -35,7 +35,7 @@ namespace SharpTables
 
         public static void AddTDataset<T>(Table target, IEnumerable<T> data)
         {
-            if(typeof(T).IsValueType)
+            if (typeof(T).IsValueType)
             {
                 FieldInfo[] fields = GetFields(typeof(T));
 

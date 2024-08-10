@@ -1,5 +1,4 @@
-﻿using SharpTables;
-using SharpTables.Annotations;
+﻿using SharpTables.Annotations;
 using SharpTables.Extensions;
 
 var foos = new List<Foo>
